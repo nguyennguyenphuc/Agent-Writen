@@ -1,0 +1,116 @@
+# Tạo Teacher Agent chuyên viết bài học thuật AIO2025
+
+Tạo một skill mới chuyên **viết bài học thuật** (tutorial, tài liệu giảng dạy) theo chuẩn AIO2025, tách biệt khỏi skill ra đề thi hiện tại. Teacher mới sẽ kế thừa văn phong, giọng văn từ teacher hiện tại nhưng chuyên môn hóa cho việc **viết bài**, không phải ra đề. Skill mới còn có khả năng **research theo chủ đề** và **đọc đa dạng file** (PDF có hình ảnh, Word).
+
+## Phân tích tài liệu đã đọc
+
+| Nguồn | Nội dung chính rút ra |
+|:-------|:---------------------|
+| `Tai lieu mau.pdf` | Tutorial smolagents — mẫu bài viết hoàn chỉnh: cấu trúc I→II→III→IV, giọng "chúng ta", giải thích → code → giải thích, hình → caption → giải thích |
+| `Guide_Latex.pdf` | Template LaTeX cơ bản: section/subsection, info boxes (khái niệm, tip, lưu ý), bảng ký hiệu, layout 2 cột, code block, câu hỏi trắc nghiệm |
+| `Guide_Latex-2.pdf` | Hướng dẫn LaTeX chi tiết: 3 kiểu figure caption, 4 kiểu table, code block (`aivncodebox`), 6 cặp màu, reference & appendix |
+| [teacher_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/teacher-student-debate/teacher_guide.md) | Vai trò teacher: thân thiện, kiên nhẫn, thực tế, giọng giảng bài |
+| [exam_style_analysis.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/teacher-student-debate/exam_style_analysis.md) | Hành văn AIO2025: bối cảnh → thiết lập → hình → câu hỏi, giọng thân mật, thuật ngữ bold + giải nghĩa |
+
+## Proposed Changes
+
+### Skill: `academic-writing`
+
+Tạo thư mục skill mới tại `.agents/skills/academic-writing/` với các file sau:
+
+---
+
+#### [NEW] [SKILL.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/SKILL.md)
+
+File chính mô tả skill viết học thuật, bao gồm:
+- **Vai trò**: Viết tutorial, tài liệu giảng dạy AI/ML theo chuẩn AIO2025
+- **Quy trình**: Research → Đọc tài liệu gốc → Phân tích cấu trúc → Viết bài → Review → LaTeX
+- **Chế độ**: RESEARCH (nghiên cứu chủ đề) / CREATE (viết mới) / REWRITE (chỉnh sửa) / REVIEW (review bài)
+- **Bước chi tiết**: Tương tự SKILL.md của teacher-student-debate nhưng cho viết bài
+- **Tham chiếu**: Đến các file guide trong cùng thư mục
+
+---
+
+#### [NEW] [writing_teacher_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/writing_teacher_guide.md)
+
+Hướng dẫn vai trò Teacher viết bài, kế thừa từ [teacher_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/teacher-student-debate/teacher_guide.md):
+- **Tính cách**: Thân thiện, kiên nhẫn, thực tế (giữ nguyên)
+- **Giọng văn**: Giọng giảng bài "chúng ta", dẫn dắt từ đơn giản → phức tạp
+- **Nhiệm vụ cụ thể**: Research chủ đề → Đọc tài liệu (PDF/Word) → Lên outline → Viết từng section → Review → Export LaTeX
+- **Cách viết**: Bối cảnh → Giải thích → Code → Giải thích, hình trước giải thích sau
+- **Khả năng research**: Tìm kiếm web, đọc paper, tổng hợp kiến thức theo chủ đề
+- **Chuẩn chất lượng**: Checklist cho mỗi section (có hình? có code? có giải thích đủ?)
+
+---
+
+#### [NEW] [writing_style_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/writing_style_guide.md)
+
+Tổng hợp phong cách viết AIO2025 rút ra từ `Tai lieu mau.pdf` + [exam_style_analysis.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/teacher-student-debate/exam_style_analysis.md):
+- **Cấu trúc bài viết**: Giới thiệu → Lý thuyết → Cài đặt/Thực hành → Câu hỏi → Tài liệu tham khảo → Phụ lục
+- **Hành văn**: Giọng "chúng ta", thuật ngữ bold + giải nghĩa, câu nối chuyển tiếp
+- **Pattern code**: Giải thích → Code → Giải thích (bullet list)
+- **Pattern hình**: Hình → Caption → Giải thích tham chiếu
+- **Pattern bảng**: Bold header, giải thích bên cạnh hoặc bên dưới
+- **Hộp thông tin**: Khái niệm, Tip, Lưu ý — khi nào dùng loại nào
+- **Ví dụ tốt/xấu**: Bảng so sánh ❌/✅ cho từng pattern
+
+---
+
+#### [NEW] [latex_writing_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/latex_writing_guide.md)
+
+Hướng dẫn LaTeX chuyên cho viết bài (không phải đề thi), rút từ `Guide_Latex.pdf` + `Guide_Latex-2.pdf`:
+- **Preamble**: Template chuẩn + các package cần thiết
+- **Cấu trúc**: `\section`, `\subsection`, `\subsubsection`, `\noindent`
+- **Hình ảnh**: 3 kiểu caption (figurecardcaptionaivn, figurecaptionmodern, truyền thống)
+- **Bảng**: 4 kiểu (đơn giản, song song, header 2 dòng, caption dài)
+- **Code**: `aivncodebox` với/không tiêu đề
+- **Hộp thông tin**: Khái niệm box, Tip box, Lưu ý box
+- **Màu sắc**: 6 cặp màu accent/row
+- **Checklist**: Kiểm tra trước khi xuất
+
+---
+
+#### [NEW] [research_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/research_guide.md)
+
+Hướng dẫn nghiên cứu chủ đề trước khi viết bài:
+- **Quy trình research**: Xác định chủ đề → Tìm nguồn → Đọc & tổng hợp → Lên outline
+- **Cách tìm nguồn**: Web search, paper, documentation chính thức, GitHub repos
+- **Cách tổng hợp**: Ghi chú key concepts, so sánh phương pháp, xác định flow bài viết
+- **Output**: `{topic}_research_notes.md` chứa kiến thức đã tổng hợp
+
+---
+
+#### [NEW] [document_reader_guide.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/document_reader_guide.md)
+
+Hướng dẫn đọc đa dạng file nguồn:
+- **PDF có hình ảnh**: Render từng trang thành PNG (dpi=200) rồi đọc qua `view_file`, kết hợp extract text để grep tìm kiếm nhanh
+- **PDF toàn text**: Extract text bằng `pymupdf`
+- **Word (.docx)**: Extract text + hình bằng `python-docx`, hình lưu ra thư mục riêng
+- **Chiến lược đọc**: Luôn đọc hết toàn bộ tài liệu, không đọc chọn lọc, ghi chú visual notes cho hình quan trọng
+- **Script mẫu**: Code Python sẵn cho từng loại file
+
+---
+
+#### [NEW] [writing_teacher_experience.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/skills/academic-writing/writing_teacher_experience.md)
+
+File nhật ký kinh nghiệm (khởi tạo trống, sẽ được cập nhật sau mỗi lần viết bài):
+- **Lỗi đã mắc & bài học**: Bảng trống
+- **Mẫu bài viết hiệu quả**: Bảng trống  
+- **Mẹo viết bài**: Danh sách trống
+
+---
+
+### Workflow
+
+#### [NEW] [academic-writing.md](file:///Users/nguyennp/AI/Agent/Agent%20Writen/.agents/workflows/academic-writing.md)
+
+Workflow `/academic-writing` để kích hoạt skill mới.
+
+## Verification Plan
+
+### Manual Verification
+1. Kiểm tra tất cả 7 file được tạo đúng vị trí trong `.agents/skills/academic-writing/`
+2. Kiểm tra workflow file tồn tại trong `.agents/workflows/`
+3. Đọc qua từng file để đảm bảo nội dung nhất quán và đầy đủ
+4. Test đọc PDF có hình bằng script trong `document_reader_guide.md`
+5. Test đọc Word file bằng script trong `document_reader_guide.md`
