@@ -1,0 +1,735 @@
+% ===================================================================
+% tableau_basic_charts.tex — Các loại biểu đồ cơ bản trong Tableau
+% Xuất từ tableau_basic_charts.md theo chuẩn AIO2025
+% ===================================================================
+
+\documentclass[12pt]{article}
+
+% --- Tiếng Việt ---
+\usepackage[utf8]{vietnam}
+\usepackage[vietnamese=nohyphenation]{hyphsubst}
+\usepackage[vietnamese]{babel}
+\AtBeginDocument{\shorthandoff{"}}
+
+% --- Packages cơ bản ---
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{booktabs}
+\usepackage{ragged2e}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{multicol}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{titling}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,mathrsfs}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{listings}
+\usepackage{geometry}
+
+\geometry{a4paper, margin=2.5cm}
+
+% --- Màu sắc AIO ---
+\definecolor{aivnGreen}{RGB}{0,128,0}
+\definecolor{aivnBlue}{RGB}{41,98,255}
+\definecolor{aivnOrange}{RGB}{255,152,0}
+\definecolor{aivnRed}{RGB}{229,57,53}
+\definecolor{lightgray}{gray}{0.95}
+
+% --- Hộp thông tin ---
+\newtcolorbox{conceptbox}[1]{
+  enhanced, colback=blue!5, colframe=aivnBlue,
+  coltitle=white, colbacktitle=aivnBlue,
+  title={\faIcon{book}~\textbf{#1}},
+  fonttitle=\bfseries, arc=4pt, boxrule=1pt
+}
+
+\newtcolorbox{tipbox}[1]{
+  enhanced, colback=green!5, colframe=aivnGreen,
+  coltitle=white, colbacktitle=aivnGreen,
+  title={\faIcon{lightbulb}~\textbf{#1}},
+  fonttitle=\bfseries, arc=4pt, boxrule=1pt
+}
+
+\newtcolorbox{notebox}{
+  enhanced, colback=orange!5, colframe=aivnOrange,
+  coltitle=white, colbacktitle=aivnOrange,
+  title={\faIcon{exclamation-triangle}~\textbf{Lưu ý}},
+  fonttitle=\bfseries, arc=4pt, boxrule=1pt
+}
+
+\newtcolorbox{warningbox}[1]{
+  enhanced, colback=red!5, colframe=aivnRed,
+  coltitle=white, colbacktitle=aivnRed,
+  title={\faIcon{exclamation-circle}~\textbf{#1}},
+  fonttitle=\bfseries, arc=4pt, boxrule=1pt
+}
+
+% --- Đường kẻ ngang ---
+\newcommand{\sectionrule}{\vspace{0.5em}\noindent\rule{\linewidth}{0.4pt}\vspace{0.5em}}
+
+% --- Title ---
+\title{
+  \begin{center}
+    \Large{AI VIET NAM -- AI COURSE 2025}\\[1ex]
+    \Huge\textbf{Các loại biểu đồ cơ bản trong Tableau}\\[0.5ex]
+    \large (Basic Charts)\\[1ex]
+    \large Tutorial
+  \end{center}
+}
+\author{}
+\date{}
+
+% ===================================================================
+\begin{document}
+\maketitle
+
+\begin{conceptbox}{Dataset sử dụng trong ví dụ}
+\textbf{Tableau Superstore} --- bộ dữ liệu mẫu có sẵn trong Tableau Desktop, tại menu \textbf{Help $\rightarrow$ Sample Workbooks $\rightarrow$ Superstore}.
+\end{conceptbox}
+
+\tableofcontents
+\newpage
+
+% ===================================================================
+\section{Giới thiệu --- Chọn đúng biểu đồ là nền tảng của data storytelling}
+% ===================================================================
+
+\noindent Một trong những kỹ năng quan trọng nhất --- và cũng thường bị đánh giá thấp nhất --- khi làm việc với Tableau là \textbf{chọn đúng loại biểu đồ} cho từng câu hỏi phân tích. Biểu đồ không chỉ là vỏ bọc trình bày --- nó là phương tiện truyền tải thông điệp. Một biểu đồ được chọn sai có thể khiến xu hướng rõ ràng trở nên vô hình, hoặc tệ hơn, khiến người xem rút ra kết luận sai từ dữ liệu đúng.
+
+\noindent Nguyên tắc cốt lõi khi chọn biểu đồ là xuất phát từ \textbf{câu hỏi phân tích}, không phải từ dữ liệu có sẵn. Trước khi kéo bất kỳ field nào, hãy tự hỏi: \textit{``Tôi muốn trả lời câu hỏi gì?''} Bảng dưới đây là framework đơn giản nhất để chọn chart:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Câu hỏi phân tích} & \textbf{Loại biểu đồ} & \textbf{Lý do} \\
+\midrule
+Danh mục nào có giá trị lớn nhất/nhỏ nhất? & \textbf{Bar Chart} & Chiều dài thanh dễ so sánh \\
+Chỉ số thay đổi như thế nào theo thời gian? & \textbf{Line Chart} & Đường kết nối thể hiện xu hướng liên tục \\
+Khối lượng tích lũy theo thời gian ra sao? & \textbf{Area Chart} & Vùng tô màu nhấn mạnh tổng khối lượng \\
+Hai chỉ số số có mối tương quan không? & \textbf{Scatter Plot} & Vị trí điểm trên mặt phẳng 2D thể hiện quan hệ \\
+Dữ liệu phân bố như thế nào? & \textbf{Histogram} & Cột tần suất cho thấy phân phối \\
+Phân phối khác nhau giữa các nhóm? & \textbf{Box Plot} & Trung vị, IQR và outlier trong 1 hình \\
+Cần con số chính xác để tra cứu? & \textbf{Text Table / Heat Map} & Bảng số liệu không mất thông tin \\
+Dữ liệu có yếu tố địa lý? & \textbf{Maps} & Bản đồ trực quan hóa vị trí \\
+Tỷ lệ phần trong tổng thể? & \textbf{Treemap / Packed Bubbles} & Kích thước hình thể hiện tỷ trọng \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{conceptbox}{Rows/Columns Shelf và Marks Card}
+Trong Tableau, toàn bộ quá trình xây dựng biểu đồ xoay quanh việc \textbf{kéo và thả (drag \& drop)} các field vào đúng vị trí:
+\begin{itemize}[nosep]
+    \item \textbf{Columns shelf}: Xác định những gì hiển thị trên \textbf{trục X} (chiều ngang). Thường là Dimension hoặc Date field.
+    \item \textbf{Rows shelf}: Xác định những gì hiển thị trên \textbf{trục Y} (chiều dọc). Thường là Measure (số liệu cần đo).
+    \item \textbf{Marks card}: Bộ điều khiển trực quan --- gồm các ô \textbf{Color}, \textbf{Size}, \textbf{Label}, \textbf{Detail}, \textbf{Shape}. Kéo field vào đây để thêm lớp thông tin vào biểu đồ mà không thay đổi cấu trúc chính.
+\end{itemize}
+\end{conceptbox}
+
+\noindent Trong phần tiếp theo, chúng ta sẽ đi qua từng loại biểu đồ theo một trình tự nhất quán: \textbf{khi nào dùng} $\rightarrow$ \textbf{cách tạo từng bước} $\rightarrow$ \textbf{các tùy chỉnh nâng cao phổ biến}.
+
+% ===================================================================
+\section{Bar Chart --- So sánh giữa các danh mục}
+% ===================================================================
+
+\subsection{Khi nào dùng Bar Chart?}
+
+\noindent Bar Chart (biểu đồ cột) là loại biểu đồ phổ biến nhất trong phân tích kinh doanh vì lý do đơn giản: \textbf{não người rất giỏi so sánh chiều dài}. Khi bạn nhìn vào một Bar Chart, gần như ngay lập tức bạn thấy cột nào cao nhất, cột nào thấp nhất, và các cột cách nhau bao xa. Đây là lợi thế mà Pie Chart hay biểu đồ góc không có được.
+
+\noindent Bar Chart phù hợp trong các tình huống sau: so sánh doanh thu, lợi nhuận, hay bất kỳ chỉ số nào giữa các nhóm \textbf{rời rạc} (discrete) như danh mục sản phẩm, khu vực, nhân viên, hay sản phẩm riêng lẻ. Điểm mấu chốt là các nhóm này \textbf{không có quan hệ thứ tự tự nhiên} --- ``Furniture'' không phải đứng trước hay sau ``Technology'' về mặt logic. Nếu các nhóm có thứ tự thời gian (tháng 1, tháng 2...), hãy cân nhắc Line Chart.
+
+\subsection{Cách tạo Bar Chart trong Tableau}
+
+\noindent Để minh họa, chúng ta sẽ tạo biểu đồ so sánh tổng doanh thu (\texttt{Sales}) theo danh mục sản phẩm (\texttt{Category}) trong Superstore.
+
+\noindent \textbf{Bước 1:} Trong Data Pane, tìm field \textbf{\texttt{Category}} trong nhóm Dimensions (Dimensions là các field màu xanh dương, chứa dữ liệu văn bản/phân loại). Kéo \textbf{\texttt{Category}} vào \textbf{Columns shelf}.
+
+\noindent \textbf{Bước 2:} Tìm field \textbf{\texttt{Sales}} trong nhóm Measures (màu xanh lá, chứa dữ liệu số). Kéo \textbf{\texttt{Sales}} vào \textbf{Rows shelf}.
+
+\noindent Ngay lập tức, Tableau tự động tạo một \textbf{Vertical Bar Chart} (cột đứng) với 3 cột --- Furniture, Office Supplies, Technology --- trên trục X, và tổng doanh thu \texttt{SUM(Sales)} trên trục Y. Tableau tự động áp dụng hàm \texttt{SUM} vì đây là Measure.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{images/bar_chart_basic.png}
+\caption{Bar Chart --- Sales by Department với Marks card hiển thị bên trái. \texttt{SUM(Sales)} trên Columns shelf, Department trên Rows shelf. Tableau tự chọn mark type = Automatic (bar).}
+\label{fig:bar_chart}
+\end{figure}
+
+\noindent \textbf{Bước 3 --- Sắp xếp để dễ đọc hơn:} Nhấp vào biểu tượng \textbf{Sort Descending} trên toolbar (biểu tượng thanh cột A$\rightarrow$Z hoặc Z$\rightarrow$A) để sắp xếp từ doanh thu cao đến thấp. Biểu đồ đã sắp xếp luôn dễ đọc hơn --- người xem ngay lập tức thấy danh mục nào dẫn đầu mà không cần nhìn từng con số.
+
+\noindent \textbf{Bước 4 --- Thêm màu theo Sub-Category (nâng cao):} Nếu muốn xem thêm phân rã theo danh mục con, kéo \textbf{\texttt{Sub-Category}} vào ô \textbf{Color} trong Marks card. Tableau tự động phân màu các điểm dữ liệu, biến biểu đồ thành \textbf{Stacked Bar Chart} --- mỗi cột được chia thành nhiều màu ứng với từng Sub-Category. Lúc này mỗi cột đại diện cho tổng doanh thu của một Category, các segment màu bên trong cho biết từng Sub-Category đóng góp bao nhiêu vào tổng đó.
+
+\subsection{Biến thể nâng cao --- Stacked Bar Chart và Percent of Total}
+
+\noindent Ngoài Stacked Bar Chart thông thường (giá trị tuyệt đối), một biến thể rất hữu ích là \textbf{Stacked Bar Chart 100\%} --- mỗi cột đều có chiều cao bằng nhau (= 100\%) và các segment màu thể hiện \textbf{tỷ lệ phần trăm} đóng góp của từng danh mục con. Loại biểu đồ này trả lời câu hỏi \textit{``Cơ cấu nội bộ của mỗi Category như thế nào?''} thay vì \textit{``Category nào bán được nhiều nhất?''}.
+
+\noindent Để tạo Stacked Bar 100\%, sau khi đã có Stacked Bar Chart thông thường, thực hiện:
+
+\noindent \textbf{Bước 5:} Nhấp chuột phải vào \texttt{SUM(Sales)} trên Rows shelf $\rightarrow$ chọn \textbf{Quick Table Calculation} $\rightarrow$ chọn \textbf{Percent of Total}. Tableau tính lại giá trị, mỗi segment bây giờ hiển thị tỷ lệ phần trăm thay vì giá trị tuyệt đối. Cần chỉ định \textbf{Compute Using} $\rightarrow$ \textbf{Cell} để Tableau hiểu tỷ lệ phần trăm được tính trong phạm vi mỗi Category (không phải toàn bộ dataset).
+
+\noindent Kết quả: 3 cột với chiều cao bằng nhau, mỗi cột chia nhiều màu thể hiện tỷ trọng \% của từng Sub-Category trong từng Category --- cực kỳ hữu ích khi so sánh cơ cấu sản phẩm giữa các phân khúc thị trường.
+
+\begin{tipbox}{Chuyển sang Horizontal Bar Chart}
+Khi tên danh mục quá dài (ví dụ tên sản phẩm đầy đủ), biểu đồ cột đứng sẽ bị chồng chéo nhãn. Giải pháp: nhấp \textbf{Ctrl + W} (hoặc vào menu \textbf{Analysis $\rightarrow$ Swap Rows and Columns}) để đổi trục, biến thành Horizontal Bar Chart. Cột ngang thoải mái hơn cho tên dài và giúp mắt đọc từ trái sang phải tự nhiên hơn.
+\end{tipbox}
+
+\subsection{Sắp xếp (Sort) --- 4 phương pháp}
+
+\noindent Sắp xếp biểu đồ từ cao đến thấp giúp người xem ngay lập tức thấy danh mục nào đứng đầu mà không cần quét qua toàn bộ biểu đồ. Tableau cung cấp 4 phương pháp sắp xếp khác nhau:
+
+\noindent \textbf{Cách 1 --- Toolbar sort button:} Nhấp vào biểu tượng \textbf{Sort Ascending/Descending} trên toolbar. Đây là cách nhanh nhất --- Tableau tự động sắp xếp Dimension dựa trên Measure đang định nghĩa trục. Khi dữ liệu được cập nhật, thứ tự sắp xếp tự động cập nhật theo.
+
+\noindent \textbf{Cách 2 --- Axis sort icon:} Di chuột lên trục số (trục X hoặc Y) --- một biểu tượng sắp xếp nhỏ xuất hiện cạnh tên trục. Nhấp vào đó để bật sắp xếp tự động --- kết quả giống Cách 1 nhưng kích hoạt từ trục thay vì toolbar.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{images/sort_toolbar_icons.png}
+\caption{Axis sort icon --- biểu tượng sắp xếp xuất hiện trên trục khi di chuột.}
+\label{fig:sort_axis}
+\end{figure}
+
+\noindent \textbf{Cách 3 --- Dropdown Sort menu:} Nhấp vào mũi tên bên cạnh tên Dimension trên header của biểu đồ --- menu drop-down xuất hiện với 4 kiểu sắp xếp:
+\begin{itemize}[nosep]
+    \item \textbf{Data source order} --- thứ tự trong file gốc
+    \item \textbf{Alphabetic} --- sắp xếp theo bảng chữ cái
+    \item \textbf{Field} --- sắp xếp theo Measure cụ thể (bạn chọn Measure nào)
+    \item \textbf{Nested} --- sắp xếp riêng lẻ trong mỗi Panel (khi biểu đồ có nhiều panel)
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{images/sort_dropdown_menu.png}
+\caption{Dropdown Sort menu --- chọn Field hoặc Nested để sắp xếp theo Measure hoặc riêng từng Panel.}
+\label{fig:sort_dropdown}
+\end{figure}
+
+\noindent \textbf{Cách 4 --- Kéo thủ công (Manual sort):} Giữ và kéo các header trên biểu đồ để sắp xếp thủ công. Kết quả là sắp xếp cố định (fixed) --- không tự cập nhật khi dữ liệu thay đổi. Đây là cách duy nhất để định nghĩa thứ tự tùy chỉnh (ví dụ: sắp xếp theo mức ưu tiên kinh doanh, không theo con số).
+
+\begin{notebox}
+Mọi phương pháp sắp xếp đều \textbf{ưu tiên theo view} và ghi đè lên thứ tự mặc định trong metadata. Khi sắp xếp không còn cần, nhấp chuột phải vào field $\rightarrow$ chọn \textbf{Clear Sort} để xóa.
+\end{notebox}
+
+\noindent \textbf{Tóm tắt Section II:} Chúng ta đã tạo Bar Chart cơ bản (Hình 1), tìm hiểu Stacked Bar và Percent of Total, và 4 phương pháp sắp xếp (Hình 2, 3).
+
+% ===================================================================
+\section{Line Chart --- Xu hướng theo thời gian}
+% ===================================================================
+
+\subsection{Khi nào dùng Line Chart?}
+
+\noindent Line Chart (biểu đồ đường) là công cụ tối thượng để trả lời câu hỏi: \textbf{``Chỉ số này thay đổi như thế nào theo thời gian?''} Đường kẻ nối các điểm dữ liệu liên tiếp tạo ra một ``dòng chảy'' trực quan, giúp người xem tức thì nhận ra xu hướng tăng, giảm, hay dao động theo mùa. Đây là điều mà Bar Chart không thể làm tốt --- nếu trục X là 12 tháng liên tiếp cùng một biến, Bar Chart cho 12 cột rời rạc khó nhận ra xu hướng, trong khi Line Chart cho một đường rõ ràng.
+
+\noindent Tuy nhiên, có một nguyên tắc quan trọng cần nhớ: \textbf{chỉ dùng Line Chart khi trục X là thời gian hoặc một dãy số có thứ tự liên tục}. Dùng Line Chart cho dữ liệu phân loại rời rạc (như 5 khu vực địa lý) là sai về mặt thống kê học --- đường nối giữa ``North'' và ``South'' không có ý nghĩa gì.
+
+\subsection{Cách tạo Line Chart trong Tableau}
+
+\noindent Chúng ta sẽ tạo biểu đồ theo dõi xu hướng doanh thu theo từng tháng trong Superstore.
+
+\noindent \textbf{Bước 1:} Kéo field \textbf{\texttt{Order Date}} vào \textbf{Columns shelf}. Tableau nhận đây là Date field và tự động hiển thị \texttt{YEAR(Order Date)} --- tổng hợp theo năm. Bạn sẽ thấy trên biểu đồ các điểm dữ liệu rời rạc theo năm, chưa phải Line Chart.
+
+\noindent \textbf{Bước 2:} Kéo field \textbf{\texttt{Sales}} vào \textbf{Rows shelf}. Lúc này Tableau đã có đủ thông tin: trục X là Date và trục Y là Measure số, nên tự động chuyển sang \textbf{Line Chart}.
+
+\noindent \textbf{Bước 3 --- Drill down từ Năm xuống Tháng:} Hiện tại biểu đồ chỉ hiển thị theo năm --- quá thô để thấy xu hướng mùa vụ. Để xem chi tiết hơn, nhấp chuột phải vào \texttt{YEAR(Order Date)} đang hiển thị trên Columns shelf. Trong menu hiện ra, bạn thấy \textbf{2 nhóm tùy chọn} (tách biệt bởi đường kẻ ngang):
+\begin{itemize}[nosep]
+    \item Nhóm \textbf{trên} (xanh dương --- Discrete): trả về nhãn dạng header rời rạc
+    \item Nhóm \textbf{dưới} (xanh lá --- Continuous): trả về trục liên tục theo thời gian
+\end{itemize}
+
+\noindent Chọn \textbf{\texttt{Month}} trong nhóm \textbf{dưới} (Continuous). Biểu đồ sẽ chuyển từ hiển thị theo năm sang theo từng tháng với trục thời gian liên tục, đường kẻ trở nên chi tiết và mượt hơn.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{images/discrete_continuous_date_menu.png}
+\caption{Menu chọn Discrete vs Continuous Date --- hai nhóm tùy chọn khi nhấp chuột phải vào Date pill. Nhóm trên (Discrete) tạo header rời rạc, nhóm dưới (Continuous) tạo trục liên tục.}
+\label{fig:date_menu}
+\end{figure}
+
+\noindent \textbf{Bước 4 --- Thêm nhiều đường để so sánh:} Kéo \textbf{\texttt{Category}} vào ô \textbf{Color} trong Marks card. Tableau sẽ vẽ \textbf{3 đường riêng biệt} --- một đường cho mỗi Category, phân biệt bằng màu sắc. Bây giờ chúng ta có thể so sánh xu hướng doanh thu của Furniture vs Office Supplies vs Technology theo cùng trục thời gian.
+
+\begin{tipbox}{Discrete Date vs Continuous Date: khác nhau quan trọng}
+Khi nhấp chuột phải vào một Date field trên shelf, Tableau luôn hiển thị 2 nhóm lựa chọn:
+\begin{itemize}[nosep]
+    \item \textbf{Discrete (màu xanh dương):} Mỗi giá trị thời gian trở thành một \textbf{header riêng biệt}. Ví dụ ``January'', ``February''... hoặc ``2021'', ``2022''... --- hữu ích khi muốn tạo cột riêng theo năm trong bảng.
+    \item \textbf{Continuous (màu xanh lá):} Thời gian được hiểu là một \textbf{trục liên tục} --- đường kẻ chạy mượt, tỷ lệ giữa các điểm thời gian được bảo toàn chính xác.
+\end{itemize}
+\textbf{Quy tắc:} Với Line Chart, \textbf{luôn} chọn Continuous để trục X phản ánh đúng dòng chảy thời gian. Dùng Discrete chỉ khi muốn tạo các cột tiêu đề tách biệt (như trong Text Table theo năm).
+\end{tipbox}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{images/line_chart_continuous.png}
+\caption{Line Chart --- Doanh thu theo Order Date (Continuous Quarters). Đường kẻ nối liền mạch từ 2012 Q2 đến 2015 Q4, cho thấy xu hướng doanh thu tăng rõ rệt.}
+\label{fig:line_chart}
+\end{figure}
+
+\subsection{Discrete vs Continuous Date --- Hiểu sâu để tạo biểu đồ đúng}
+
+\noindent Đây là một trong những concept quan trọng nhất khi làm việc với dữ liệu thời gian trong Tableau, và cũng là nguồn gốc của rất nhiều lỗi biểu đồ khó hiểu: \textbf{tại sao đường kẻ bị đứt khi qua năm mới?}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{X X}
+\toprule
+\textbf{Discrete Date (xanh dương)} & \textbf{Continuous Date (xanh lá)} \\
+\midrule
+Mỗi giá trị = một \textbf{header riêng biệt} & Toàn bộ = một \textbf{trục số liên tục} \\
+\texttt{YEAR(Date)} Discrete: \texttt{2022 | 2023 | 2024} riêng biệt & \texttt{YEAR(Date)} Continuous: trục 2022$\rightarrow$2024 liền mạch \\
+Pill \textbf{màu xanh dương} trên shelf & Pill \textbf{màu xanh lá} trên shelf \\
+\texttt{MONTH(Date)} Discrete: Jan$\rightarrow$Dec cho mỗi năm & \texttt{MONTH(Date)} Continuous: DATE value bị truncate theo tháng \\
+Đường \textbf{không nối qua} giữa các năm & Đường \textbf{nối liền} xuyên suốt các năm \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Ví dụ minh họa --- Tại sao đường bị đứt:}
+
+\noindent Nếu bạn kéo \texttt{Order Date} vào Columns shelf và chọn \texttt{Month} (Discrete, màu xanh dương), Tableau tạo ra 12 header \textbf{January, February, ..., December} --- mỗi năm tạo \textbf{một bộ 12 header riêng} và đường không nối qua giữa năm. Đây là Discrete --- nó hỏi ``tháng 1 năm nào?'' chứ không biết thứ tự giữa các năm.
+
+\noindent Nếu chọn \texttt{MONTH(Date)} Continuous (màu xanh lá), Tableau tạo một \textbf{trục Date liên tục} từ January 2021 $\rightarrow$ December 2024 liền mạch, đường kẻ nối thông suốt qua các năm.
+
+\noindent \textbf{Cách chuyển đổi:} Nhấp chuột phải vào Date pill đang hiển thị trên shelf $\rightarrow$ menu xuất hiện với \textbf{2 nhóm tùy chọn} (nhóm trên = Discrete xanh dương, nhóm dưới = Continuous xanh lá):
+\begin{itemize}[nosep]
+    \item Chọn cùng cấp độ (Year/Quarter/Month) ở nhóm Continuous để chuyển từ Discrete sang Continuous
+    \item Hoặc nhấp chuột phải vào pill $\rightarrow$ chọn ``Discrete'' / ``Continuous'' trực tiếp
+\end{itemize}
+
+\begin{warningbox}{Quy tắc đơn giản}
+\begin{itemize}[nosep]
+    \item Dùng Line Chart để xem xu hướng theo thời gian $\rightarrow$ luôn chọn \textbf{Continuous date}
+    \item Dùng Discrete date khi cần tạo header riêng biệt (như trong Text Table theo năm-tháng)
+    \item Nếu đường bị đứt, kiểm tra ngay: pill Date có màu xanh dương không? Nếu có, hãy chuyển sang Continuous.
+\end{itemize}
+\end{warningbox}
+
+% ===================================================================
+\section{Area Chart --- Nhấn mạnh khối lượng tích lũy theo thời gian}
+% ===================================================================
+
+\subsection{Khi nào dùng Area Chart?}
+
+\noindent Area Chart thực chất là \textbf{Line Chart với vùng dưới đường được tô màu}. Sự khác biệt tuy đơn giản nhưng mang ý nghĩa truyền thông quan trọng: Line Chart nhấn mạnh \textbf{xu hướng} (lên hay xuống), còn Area Chart nhấn mạnh \textbf{khối lượng tích lũy} (tổng giá trị qua thời gian). Hãy tưởng tượng Line Chart như đường chân trời --- bạn thấy hướng đi nhưng không thấy ``lượng'' bên dưới. Area Chart lấp đầy phần đó.
+
+\noindent Dùng Area Chart khi:
+\begin{itemize}[nosep]
+    \item Muốn thể hiện \textbf{phần đóng góp của từng nhóm} trong tổng giá trị theo thời gian (Stacked Area)
+    \item Muốn nhấn mạnh \textbf{khối lượng tổng cộng} chứ không chỉ đường xu hướng
+    \item Có 2--4 nhóm cần so sánh --- quá nhiều nhóm sẽ khiến biểu đồ trở nên rối và khó đọc
+\end{itemize}
+
+\subsection{Cách tạo Area Chart trong Tableau}
+
+\noindent \textbf{Bước 1:} Kéo \textbf{\texttt{Order Date}} vào \textbf{Columns shelf}. Nhấp chuột phải $\rightarrow$ chọn \textbf{Month} (Continuous) trong nhóm dưới để có trục thời gian liên tục.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Sales}} vào \textbf{Rows shelf}. Tableau tạo Line Chart mặc định.
+
+\noindent \textbf{Bước 3 --- Chuyển sang Area Chart:} Trong \textbf{Marks card}, nhấp vào dropdown \textbf{Mark Type} (đang hiển thị ``Automatic'' hoặc ``Line'') $\rightarrow$ chọn \textbf{Area}. Vùng dưới đường kẻ lập tức được tô màu --- biểu đồ bây giờ nhấn mạnh tổng khối lượng bán hàng tích lũy.
+
+\noindent \textbf{Bước 4 --- Tạo Stacked Area Chart:} Kéo \textbf{\texttt{Category}} vào ô \textbf{Color} trong Marks card. Tableau tạo 3 vùng màu xếp chồng (stacked) --- Furniture, Office Supplies, Technology. Mỗi vùng thể hiện phần đóng góp của Category đó vào tổng doanh thu. Vùng phía trên cùng chính là tổng doanh thu toàn công ty.
+
+\begin{tipbox}{Area Chart vs Line Chart: khi nào chọn cái nào?}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Line Chart} & \textbf{Area Chart} \\
+\midrule
+Mục đích chính & Xu hướng & Khối lượng / tỷ trọng \\
+Nhiều nhóm & Dễ đọc (đường tách biệt) & Khó đọc nếu > 4 nhóm (vùng chồng lấp) \\
+Giá trị âm & Hiển thị tốt & Khó diễn giải khi tô màu vùng âm \\
+Stacked & Không hỗ trợ & Mạnh --- thể hiện phần đóng góp \\
+\bottomrule
+\end{tabularx}
+
+\noindent \textbf{Quy tắc nhanh:} Nếu chỉ cần xem xu hướng $\rightarrow$ Line. Nếu muốn thấy ``miếng bánh'' thay đổi theo thời gian $\rightarrow$ Stacked Area.
+\end{tipbox}
+
+\begin{warningbox}{Cạm bẫy --- Stacked Area có thể gây hiểu lầm}
+Trong Stacked Area, vùng trên cùng bị ``đẩy lên'' bởi các vùng bên dưới. Điều này có nghĩa \textbf{đường biên trên của một vùng KHÔNG phải là giá trị thực} của nhóm đó --- nó là tổng tích lũy. Nếu người đọc không hiểu điều này, họ sẽ đánh giá sai kích thước vùng trên cùng. Giải pháp: dùng \textbf{Percent of Total Stacked Area} (nhấp chuột phải vào \texttt{SUM(Sales)} $\rightarrow$ Quick Table Calculation $\rightarrow$ Percent of Total) khi muốn so sánh tỷ trọng thay vì giá trị tuyệt đối.
+\end{warningbox}
+
+% ===================================================================
+\section{Scatter Plot --- Khám phá tương quan giữa hai chỉ số}
+% ===================================================================
+
+\subsection{Khi nào dùng Scatter Plot?}
+
+\noindent Scatter Plot (biểu đồ phân tán) là công cụ lý tưởng để trả lời câu hỏi: \textbf{``Hai chỉ số này có liên quan với nhau không?''} Mỗi điểm trên Scatter Plot đại diện cho một đơn thể (sản phẩm, khách hàng, đơn hàng...) với vị trí trên trục X xác định bởi chỉ số thứ nhất và trục Y bởi chỉ số thứ hai. Nếu các điểm tập trung theo một đường chéo từ dưới-trái lên trên-phải, hai chỉ số có \textbf{tương quan thuận} (cái này tăng thì cái kia cũng tăng). Nếu ngược lại, chúng có \textbf{tương quan nghịch}.
+
+\noindent Trong ngữ cảnh Superstore, Scatter Plot giúp trả lời những câu hỏi kinh doanh quan trọng: Các sản phẩm bán nhiều (\texttt{Sales} cao) có mang lại lợi nhuận cao (\texttt{Profit} cao) không? Hay có những sản phẩm ``bán chạy nhưng lỗ'' mà ta cần loại bỏ? Ngoài ra, Scatter Plot cũng giỏi phát hiện \textbf{outliers} --- những điểm nằm xa đám mây điểm chính, có thể là cơ hội hoặc vấn đề cần điều tra.
+
+\subsection{Cách tạo Scatter Plot trong Tableau}
+
+\noindent \textbf{Bước 1:} Kéo \textbf{\texttt{Sales}} (Measure) vào \textbf{Columns shelf} --- đây sẽ là trục X.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Profit}} (Measure) vào \textbf{Rows shelf} --- đây sẽ là trục Y.
+
+\noindent Ngay lúc này, Tableau hiển thị \textbf{chỉ 1 điểm duy nhất} ở giữa canvas. Đừng bối rối --- đây không phải lỗi. Tableau đang hiển thị \texttt{SUM(Sales)} và \texttt{SUM(Profit)} của \textbf{toàn bộ dataset} gộp lại thành một con số tổng, nên chỉ có 1 điểm. Biểu đồ này chưa có ý nghĩa phân tích.
+
+\noindent \textbf{Bước 3 --- Bước quan trọng nhất:} Kéo \textbf{\texttt{Sub-Category}} vào ô \textbf{Detail} trong Marks card. Tableau hiểu rằng bây giờ chúng ta muốn nhìn từng \textbf{Sub-Category riêng} thay vì tổng hợp tất cả. Ngay lập tức, 1 điểm biến thành \textbf{17 điểm} --- mỗi điểm là một Sub-Category với tọa độ \texttt{(SUM(Sales), SUM(Profit))} của riêng nó.
+
+\noindent \textbf{Bước 4 --- Thêm màu và kích thước:} Kéo \textbf{\texttt{Category}} vào \textbf{Color} để phân biệt 3 nhóm lớn bằng màu. Kéo \textbf{\texttt{Quantity}} vào \textbf{Size} để kích thước điểm phản ánh số lượng bán ra --- điểm to = bán nhiều đơn. Lúc này mỗi điểm mang 4 chiều thông tin: Sales (trục X), Profit (trục Y), Category (màu), Quantity (kích thước).
+
+\noindent \textbf{Bước 5 --- Thêm tứ phân vị (nâng cao):} Vào menu \textbf{Analysis $\rightarrow$ Add Reference Line}. Chọn \textbf{Average} cho trục X và tương tự cho trục Y. Hai đường trung bình tạo thành 4 góc phần tư (quadrant) giúp phân loại các Sub-Category:
+\begin{itemize}[nosep]
+    \item Góc trên-phải: Sales cao + Profit cao $\rightarrow$ \textbf{``Stars''} (giữ và đầu tư)
+    \item Góc dưới-phải: Sales cao + Profit thấp $\rightarrow$ \textbf{``Cash Cows''} (bán nhiều nhưng lãi ít --- cần xem xét giá)
+    \item Góc trên-trái: Sales thấp + Profit cao $\rightarrow$ \textbf{``Niche''} (lãi tốt nhưng ít bán --- tìm cách mở rộng)
+    \item Góc dưới-trái: Sales thấp + Profit thấp $\rightarrow$ \textbf{``Question Marks''} (cân nhắc loại bỏ)
+\end{itemize}
+
+\subsection{Đọc hiểu kết quả --- 3 loại tương quan và Outliers}
+
+\noindent Khi phân tích Scatter Plot, kỹ năng quan trọng nhất là nhận ra \textbf{kiểu phân bố của đám mây điểm} và từ đó suy ra mối quan hệ giữa hai biến:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3cm} X X}
+\toprule
+\textbf{Loại tương quan} & \textbf{Mô tả đám mây điểm} & \textbf{Ý nghĩa} \\
+\midrule
+\textbf{Positive} & Điểm từ dưới-trái lên trên-phải & Một biến tăng $\rightarrow$ biến kia cũng tăng. VD: Sales tăng đi cùng Profit tăng \\
+\textbf{Negative} & Điểm từ trên-trái xuống dưới-phải & Một biến tăng $\rightarrow$ biến kia giảm. VD: Discount cao đi cùng Profit thấp \\
+\textbf{No relation} & Điểm rải đều không theo hướng nào & Hai biến độc lập nhau \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Ngoài ba nhóm trên, cần chú ý đặc biệt đến \textbf{Outliers} --- những điểm nằm cô lập xa đám mây điểm chính. Trong Superstore, một Sub-Category có Profit âm lớn trong khi phần còn lại đều dương chính là outlier --- đây là tín hiệu cần điều tra: giá bán quá thấp? Chi phí vận chuyển quá cao? Chính sách chiết khấu không phù hợp?
+
+\noindent Tableau cung cấp 2 cách xử lý Outliers trực tiếp trên biểu đồ:
+\begin{itemize}[nosep]
+    \item \textbf{Annotate (Chú thích):} Nhấp chuột phải vào điểm outlier $\rightarrow$ \textbf{Annotate $\rightarrow$ Mark} $\rightarrow$ nhập mô tả. Chú thích này xuất hiện ngay trên biểu đồ, hữu ích khi trình bày để đánh dấu Sub-Category cần chú ý.
+    \item \textbf{Exclude (Loại trừ tạm thời):} Nhấp chuột phải vào điểm outlier $\rightarrow$ \textbf{Exclude}. Điểm bị ẩn khỏi view để phần còn lại hiển thị với scale phù hợp hơn. Lưu ý đây chỉ là ẩn hiển thị --- dữ liệu gốc không bị xóa và Tableau sẽ thông báo rõ ``1 member is excluded''.
+\end{itemize}
+
+\subsection{Công cụ phân tích nâng cao --- Highlighter}
+
+\noindent Khi Scatter Plot có nhiều điểm dữ liệu (hàng chục Sub-Category hoặc hàng trăm sản phẩm), rất khó nhìn ra một điểm cụ thể giữa đám mây. \textbf{Highlighter} là giải pháp: nó cho phép gõ tên để tô sáng tức thì các điểm liên quan trong khi làm mờ phần còn lại, giúp so sánh ad-hoc một cách trực quan.
+
+\noindent Cách bật Highlighter: Nhấp chuột phải vào một Dimension field trong Marks card $\rightarrow$ chọn \textbf{Show Highlighter}. Một ô tìm kiếm nhỏ xuất hiện góc trên bên phải của biểu đồ. Khi bạn gõ, các điểm khớp với tìm kiếm sẽ được tô sáng ngay lập tức --- ví dụ gõ ``Chairs'' sẽ làm nổi bật toàn bộ điểm thuộc Sub-Category Chairs trong tất cả các chart trên dashboard.
+
+\begin{notebox}
+\textbf{Tại sao Scatter Plot chỉ hiện 1 điểm?} --- Đây là điểm gây nhầm lẫn phổ biến nhất với Scatter Plot trong Tableau. Khi bạn đặt 2 Measure vào Rows và Columns mà \textbf{không có bất kỳ Dimension nào trong Detail, Color, hay Shape}, Tableau tổng hợp (aggregate) tất cả dữ liệu thành \textbf{một cụm điểm duy nhất} --- tổng Sales và tổng Profit của toàn bộ dataset.
+
+\noindent \textbf{Giải pháp:} Kéo \textbf{ít nhất 1 Dimension} vào ô \textbf{Detail} hoặc \textbf{Color} trong Marks card. Dimension này sẽ ``phá vỡ'' sự tổng hợp và tạo ra một điểm riêng cho mỗi giá trị của Dimension đó. Quy tắc này áp dụng cho mọi biểu đồ sử dụng 2 Measure trên 2 trục.
+\end{notebox}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{images/scatter_plot_highlighter.png}
+\caption{Scatter Plot với Highlighter panel --- mỗi điểm đại diện cho một Area Code, màu phân biệt theo Product Type. Dimension ``Area Code'' được kéo vào Detail trong Marks card để tạo nhiều điểm thay vì 1 điểm tổng hợp.}
+\label{fig:scatter_plot}
+\end{figure}
+
+% ===================================================================
+\section{Histogram --- Xem phân phối của dữ liệu}
+% ===================================================================
+
+\subsection{Khi nào dùng Histogram?}
+
+\noindent Histogram trả lời câu hỏi: \textit{``Dữ liệu phân bố như thế nào?''} --- đa số đơn hàng rơi vào khoảng giá nào? Có bao nhiêu kích thước đơn hàng rất lớn so với trung bình? \textbf{Histogram trông giống Bar Chart nhưng khác biệt cơ bản}: Bar Chart so sánh giữa các \textbf{danh mục rời rạc} (Furniture vs Technology), còn Histogram chia một \textbf{biến liên tục} thành các khoảng (bins) và đếm số lượng rơi vào từng khoảng.
+
+\noindent Dùng Histogram khi:
+\begin{itemize}[nosep]
+    \item Muốn hiểu hình dạng phân phối của dữ liệu (chuông, lệch phải, đa đỉnh...)
+    \item Muốn nhận ra \textbf{outlier} (giá trị bất thường) một cách trực quan
+    \item Muốn biết \textbf{đa số} dữ liệu rơi vào khoảng nào (VD: đa số đơn hàng Superstore có giá \$0--\$500)
+\end{itemize}
+
+\subsection{Cách tạo Histogram trong Tableau}
+
+\noindent \textbf{Cách 1 --- Dùng Show Me (nhanh nhất):}
+\begin{enumerate}[nosep]
+    \item Trong Data Pane, nhấp chọn field \textbf{\texttt{Sales}} (hoặc bất kỳ Measure nào muốn xem phân phối).
+    \item Nhấp \textbf{Show Me} (góc trên bên phải) $\rightarrow$ chọn biểu tượng \textbf{Histogram} (hình các cột liền kề nhau). Tableau tự động tạo \textbf{Bin} và hiển thị Histogram hoàn chỉnh.
+\end{enumerate}
+
+\noindent \textbf{Cách 2 --- Tạo thủ công (kiểm soát bin size):}
+\begin{enumerate}[nosep]
+    \item Trong Data Pane, nhấp chuột phải vào \textbf{\texttt{Sales}} $\rightarrow$ \textbf{Create $\rightarrow$ Bins...}
+    \item Tableau gợi ý \textbf{Bin Size} tự động (dựa trên range của dữ liệu). Bạn có thể chỉnh --- ví dụ: đặt Bin Size = \textbf{200} nghĩa là mỗi cột đại diện cho khoảng \$200 (0--200, 200--400, 400--600...). Nhấp \textbf{OK}.
+    \item Trong Data Pane xuất hiện field mới \textbf{\texttt{Sales (bin)}} (icon giống Dimension kèm ký hiệu bin). Kéo \textbf{\texttt{Sales (bin)}} vào \textbf{Columns shelf}.
+    \item Kéo \textbf{\texttt{Sales}} vào \textbf{Rows shelf} $\rightarrow$ nhấp chuột phải $\rightarrow$ chọn \textbf{Measure (Count)} hoặc \textbf{CNT(Sales)}. Lúc này Histogram hoàn chỉnh: trục X là khoảng giá, trục Y là số lượng đơn hàng.
+\end{enumerate}
+
+\begin{tipbox}{Chọn Bin Size phù hợp}
+Bin Size quá nhỏ $\rightarrow$ biểu đồ rối, khó thấy pattern. Bin Size quá lớn $\rightarrow$ mất chi tiết, mọi thứ dồn vào 2--3 cột. Quy tắc thực tế: bắt đầu với Bin Size mặc định của Tableau, sau đó thử tăng/giảm để tìm mức hiển thị rõ nhất hình dạng phân phối. Để chỉnh lại: nhấp chuột phải vào \textbf{\texttt{Sales (bin)}} trong Data Pane $\rightarrow$ \textbf{Edit...}
+\end{tipbox}
+
+\begin{warningbox}{Khác biệt Bar Chart vs Histogram}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+& \textbf{Bar Chart} & \textbf{Histogram} \\
+\midrule
+Trục X & Danh mục rời rạc (Category) & Khoảng liên tục (Bins) \\
+Khoảng cách cột & Có gap giữa các cột & Không có gap (liền kề) \\
+Ý nghĩa & So sánh giá trị giữa nhóm & Phân phối / tần suất \\
+\bottomrule
+\end{tabularx}
+\end{warningbox}
+
+% ===================================================================
+\section{Box Plot (Box \& Whisker) --- So sánh phân phối giữa các nhóm}
+% ===================================================================
+
+\subsection{Khi nào dùng Box Plot?}
+
+\noindent Box Plot (đôi khi gọi là Box \& Whisker) là công cụ thống kê chuyên dụng để \textbf{so sánh phân phối của một Measure giữa nhiều nhóm} --- ví dụ: mức Discount trung bình và độ biến động giữa các Region khác nhau như thế nào? Box Plot nén 5 thông tin thống kê vào 1 hình: \textbf{trung vị (median)}, \textbf{tứ phân vị 1 và 3 (Q1, Q3)}, \textbf{râu (whiskers)}, và \textbf{outlier}.
+
+\noindent Dùng Box Plot khi:
+\begin{itemize}[nosep]
+    \item Muốn so sánh \textbf{độ phân tán} của dữ liệu giữa nhiều nhóm (VD: Profit distribution theo Category)
+    \item Muốn nhận ra \textbf{outlier} (giá trị nằm ngoài râu) --- các điểm bất thường cần điều tra
+    \item Muốn biết \textbf{giá trị điển hình} (median) và \textbf{độ biến động} (IQR = Q3 -- Q1) của mỗi nhóm
+\end{itemize}
+
+\subsection{Cách tạo Box Plot trong Tableau}
+
+\noindent \textbf{Bước 1:} Kéo \textbf{\texttt{Region}} (Dimension) vào \textbf{Columns shelf} --- tạo các nhóm để so sánh.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Discount}} (Measure) vào \textbf{Rows shelf}. Tableau mặc định tạo Bar Chart với \texttt{SUM(Discount)} --- chưa đúng.
+
+\noindent \textbf{Bước 3 --- Tăng độ chi tiết:} Kéo \textbf{\texttt{Sub-Category}} (hoặc bất kỳ Dimension nào có nhiều giá trị) vào ô \textbf{Detail} trong Marks card. Điều này ``phá vỡ'' sự tổng hợp --- mỗi Sub-Category trở thành một điểm dữ liệu riêng.
+
+\noindent \textbf{Bước 4 --- Chuyển sang Box Plot:} Nhấp \textbf{Show Me} $\rightarrow$ chọn \textbf{Box-and-Whisker Plot}. Tableau tự động tính toán median, Q1/Q3, và vẽ râu + outlier.
+
+\subsection{Đọc hiểu Box Plot}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+\textbf{Thành phần} & \textbf{Ý nghĩa} \\
+\midrule
+Đường nằm ngang trong hộp & \textbf{Median} --- giá trị trung vị (50\% dữ liệu trên, 50\% dưới) \\
+Cạnh dưới hộp & \textbf{Q1} (Quartile 1) --- 25\% dữ liệu nằm dưới mức này \\
+Cạnh trên hộp & \textbf{Q3} (Quartile 3) --- 75\% dữ liệu nằm dưới mức này \\
+Chiều cao hộp (IQR) & \textbf{Q3 -- Q1} --- càng cao = dữ liệu càng phân tán \\
+Râu (whiskers) & Mở rộng đến giá trị xa nhất trong khoảng 1.5 $\times$ IQR \\
+Điểm riêng lẻ (outlier) & Giá trị nằm ngoài râu --- \textbf{bất thường}, cần điều tra \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tipbox}{Tùy chỉnh hiển thị outlier}
+Mặc định Tableau hiển thị outlier như các điểm tròn nhỏ. Để tùy chỉnh: nhấp chuột phải vào trục Y $\rightarrow$ \textbf{Edit Reference Line} $\rightarrow$ thay đổi \textbf{Whisker} và \textbf{Outlier} style. Bạn có thể ẩn outlier hoặc đổi màu để nhấn mạnh.
+\end{tipbox}
+
+% ===================================================================
+\section{Text Table, Heat Map \& Highlight Table --- Bảng số liệu và màu sắc}
+% ===================================================================
+
+\subsection{Khi nào dùng Text Table?}
+
+\noindent Text Table (còn được gọi là Crosstab --- bảng chéo, hay Pivot Table) là biểu đồ theo nghĩa rộng nhất: nó không vẽ hình, mà hiển thị \textbf{con số cụ thể trong từng ô giao nhau} của hàng và cột. Đây là lựa chọn phù hợp khi người đọc cần \textbf{tra cứu hoặc so sánh giá trị chính xác} --- ``Doanh thu của Furniture trong năm 2023 là bao nhiêu đúng?'' là câu hỏi mà Bar Chart hay Line Chart không trả lời được trực tiếp, nhưng Text Table thì có.
+
+\noindent Tuy nhiên, Text Table cũng có nhược điểm đáng kể: rất khó nhận ra xu hướng, khó so sánh giữa nhiều con số cùng lúc, và trở nên khó đọc khi có nhiều hàng/cột. Một quy tắc thực tế: \textbf{chỉ dùng Text Table khi người xem thực sự cần con số chính xác} --- ví dụ báo cáo tài chính, bảng KPI hàng tháng, hay khi người đọc là kế toán cần đối chiếu số liệu. Với hầu hết mục đích trình bày và phân tích xu hướng, các loại biểu đồ trực quan (Bar, Line, Area, Scatter...) sẽ hiệu quả hơn.
+
+\subsection{Cách tạo Text Table trong Tableau}
+
+\noindent Chúng ta sẽ tạo bảng thể hiện doanh thu (\texttt{Sales}) phân theo \texttt{Category} (hàng) và năm (cột).
+
+\noindent \textbf{Bước 1:} Kéo \textbf{\texttt{Category}} vào \textbf{Rows shelf}. Tableau tạo 3 hàng --- Furniture, Office Supplies, Technology.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Order Date}} vào \textbf{Columns shelf}. Tableau mặc định tổng hợp theo \texttt{YEAR(Order Date)}, tạo ra các cột theo từng năm trong dataset.
+
+\noindent \textbf{Bước 3:} Kéo \textbf{\texttt{Sales}} vào ô \textbf{Text} trong Marks card (không phải Rows/Columns). Tableau điền giá trị \texttt{SUM(Sales)} vào từng ô giao nhau của lưới --- mỗi ô là tổng doanh thu của một Category trong một năm cụ thể.
+
+\noindent \textbf{Bước 4 --- Định dạng số để dễ đọc:} Con số mặc định Tableau hiển thị dạng thô \texttt{"1234567.89"} --- khó đọc. Để định dạng, nhấp chuột phải vào \texttt{SUM(Sales)} trong Marks card, chọn \textbf{Format...}. Trong panel Format bên trái, chọn \textbf{Numbers $\rightarrow$ Currency (Custom)} $\rightarrow$ bật \textbf{``Include thousands separators''}. Lúc này số hiển thị dạng \texttt{"\$1,234,567.89"} --- sạch và dễ đọc hơn nhiều.
+
+\noindent \textbf{Bước 5 --- Nâng cấp thành Highlight Table:} Một biến thể mạnh mẽ hơn của Text Table là \textbf{Highlight Table} --- giữ nguyên con số nhưng \textbf{thêm màu nền} gradient từ nhạt (giá trị thấp) đến đậm (giá trị cao), giúp mắt ngay lập tức nhận ra ô nào có giá trị cao/thấp mà không cần đọc từng con số. Để tạo Highlight Table: kéo thêm \texttt{Sales} vào ô \textbf{Color} trong Marks card (bên cạnh \texttt{Sales} đã có ở Text), sau đó chuyển Mark type từ \textbf{Automatic} sang \textbf{Square} trong dropdown đầu Marks card.
+
+\subsection{Heat Map --- Không cần số, chỉ cần màu}
+
+\noindent \textbf{Heat Map} là biến thể cực đoan hơn của Highlight Table: \textbf{bỏ hết con số, chỉ giữ màu sắc}. Mỗi ô trong lưới được tô màu từ nhạt đến đậm dựa trên giá trị của Measure. Dùng khi:
+\begin{itemize}[nosep]
+    \item Có lưới lớn (nhiều hàng $\times$ nhiều cột) --- số quá nhiều sẽ rối, màu giúp quay nhanh
+    \item Muốn nhận ra \textbf{pattern} trong dữ liệu (vùng nóng / vùng lạnh)
+    \item Muốn trình bày cho đối tượng không quen đọc số
+\end{itemize}
+
+\noindent Cách tạo: giống Highlight Table nhưng \textbf{không kéo Measure vào Text} --- chỉ kéo vào \textbf{Color} và \textbf{Size} (nếu muốn ô lớn/nhỏ theo giá trị). Mark type = \textbf{Square} hoặc \textbf{Circle}.
+
+\begin{tipbox}{Thêm Grand Total vào bảng}
+Để thêm hàng tổng và cột tổng vào Text Table (tương tự ``Total row'' trong Excel): vào menu \textbf{Analysis $\rightarrow$ Totals $\rightarrow$ Show Row Grand Totals} và \textbf{Show Column Grand Totals}. Tableau tự động tính \texttt{SUM} cho toàn bộ hàng và cột, thêm vào dưới cùng và bên phải của bảng. Rất hữu ích khi cần kiểm tra tổng doanh thu toàn công ty so với từng phân khúc.
+\end{tipbox}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{images/text_table_crosstab.png}
+\caption{Text Table (Crosstab) --- Hướng dẫn tạo bảng chéo với việc kéo measure vào giữa view và Dimension vào Rows.}
+\label{fig:text_table}
+\end{figure}
+
+% ===================================================================
+\section{Maps --- Trực quan hóa dữ liệu địa lý}
+% ===================================================================
+
+\subsection{Khi nào dùng Maps?}
+
+\noindent Khi dữ liệu chứa \textbf{thông tin địa lý} (Country, State, City, Postal Code), bản đồ là cách trực quan nhất để trả lời câu hỏi: \textit{``Khu vực nào có doanh thu cao nhất? Vùng nào có nhiều khách hàng?''} Tableau tự nhận diện các field địa lý (qua icon \faIcon{globe} trong Data Pane) và tự động tạo bản đồ khi bạn sử dụng chúng.
+
+\noindent Tableau hỗ trợ \textbf{2 loại bản đồ chính}:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Loại} & \textbf{Mô tả} & \textbf{Khi nào dùng} \\
+\midrule
+\textbf{Symbol Map} & Mỗi vị trí được đánh dấu bằng \textbf{điểm tròn} --- kích thước và màu thay đổi theo Measure & Dữ liệu theo điểm (thành phố, cửa hàng, khách hàng) \\
+\textbf{Filled Map} & Tô màu toàn bộ \textbf{vùng} (quốc gia, bang) theo giá trị Measure & So sánh vùng/khu vực, choropleth map \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Cách tạo Symbol Map}
+
+\noindent \textbf{Bước 1:} Double-click vào field \textbf{\texttt{State}} (hoặc bất kỳ Geographic field) trong Data Pane. Tableau tự động tạo bản đồ với các điểm đánh dấu trên từng State. Phía sau, Tableau sử dụng \textbf{Latitude (generated)} và \textbf{Longitude (generated)} để định vị.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Sales}} vào ô \textbf{Size} trong Marks card. Giờ các điểm có kích thước khác nhau --- điểm lớn = doanh thu cao.
+
+\noindent \textbf{Bước 3:} Kéo \textbf{\texttt{Profit}} vào ô \textbf{Color} trong Marks card. Các điểm được tô màu từ đỏ (âm / lỗ) đến xanh (dương / lãi). Lúc này bản đồ cho thấy cả \textbf{quy mô} (kích thước) và \textbf{hiệu suất} (màu) của từng State.
+
+\subsection{Cách tạo Filled Map}
+
+\noindent \textbf{Bước 1:} Double-click vào field \textbf{\texttt{State}} để tạo bản đồ cơ bản.
+
+\noindent \textbf{Bước 2:} Trong \textbf{Marks card}, chuyển dropdown \textbf{Mark Type} từ \textbf{Automatic} sang \textbf{Filled Map} (hoặc \textbf{Map}). Toàn bộ vùng của mỗi State được tô màu.
+
+\noindent \textbf{Bước 3:} Kéo \textbf{\texttt{Sales}} vào \textbf{Color}. Các State có doanh thu cao sẽ có màu đậm hơn.
+
+\begin{warningbox}{Xử lý vị trí không nhận được}
+Đôi khi Tableau không nhận ra một số địa danh --- góc dưới bên phải xuất hiện thông báo \textbf{``X unknown''}. Nhấp vào đó $\rightarrow$ \textbf{Edit Locations} $\rightarrow$ chỉnh sửa bằng tay (gán đúng tên quốc gia, bang). Với dataset Superstore (có field Country, State, City), Tableau nhận diện gần như 100\% chính xác.
+\end{warningbox}
+
+\begin{tipbox}{Symbol Map vs Filled Map: khi nào dùng cái nào?}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Symbol Map} & \textbf{Filled Map} \\
+\midrule
+Phù hợp & Dữ liệu theo điểm (cửa hàng, khách hàng) & Dữ liệu theo vùng (quốc gia, bang) \\
+Nhiều Measure & Kích thước + Màu = 2 Measure & Chỉ Màu = 1 Measure \\
+Vùng nhỏ & Vẫn thấy rõ (điểm tròn) & Dễ bị lấp bởi vùng lớn \\
+\bottomrule
+\end{tabularx}
+\end{tipbox}
+
+% ===================================================================
+\section{Treemap \& Packed Bubbles --- Tỷ lệ phần trong tổng thể}
+% ===================================================================
+
+\subsection{Khi nào dùng Treemap / Packed Bubbles?}
+
+\noindent Treemap và Packed Bubbles đều trả lời câu hỏi: \textit{``Phần nào chiếm tỷ trọng lớn nhất trong tổng thể?''} Thay vì dùng chiều dài thanh (Bar Chart), chúng dùng \textbf{kích thước hình} để thể hiện tỷ lệ --- hình lớn = giá trị lớn.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Loại} & \textbf{Hình dạng} & \textbf{Đặc điểm} \\
+\midrule
+\textbf{Treemap} & Hình chữ nhật lồng nhau & Sử dụng không gian hiệu quả, hỗ trợ phân cấp (Category $\rightarrow$ Sub-Category) \\
+\textbf{Packed Bubbles} & Hình tròn xếp sát nhau & Trực quan, dễ nhìn, phù hợp trình bày nhưng kém chính xác khi so sánh \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Cách tạo Treemap}
+
+\noindent \textbf{Bước 1:} Kéo \textbf{\texttt{Sub-Category}} vào ô \textbf{Detail} (hoặc \textbf{Label}) trong Marks card. Mỗi Sub-Category sẽ trở thành một hình chữ nhật.
+
+\noindent \textbf{Bước 2:} Kéo \textbf{\texttt{Sales}} vào ô \textbf{Size} trong Marks card. Kích thước mỗi ô tỷ lệ với doanh thu --- ô lớn nhất là Sub-Category có doanh thu cao nhất.
+
+\noindent \textbf{Bước 3:} Kéo \textbf{\texttt{Category}} vào ô \textbf{Color} trong Marks card. Mỗi Category được gán một màu riêng, giúp phân biệt nhóm. Nếu chưa tự động hiển thị Treemap, chuyển \textbf{Mark Type} sang \textbf{Square} hoặc dùng \textbf{Show Me $\rightarrow$ Treemap}.
+
+\noindent \textbf{Bước 4 (tùy chọn):} Kéo \textbf{\texttt{Sales}} vào \textbf{Label} để hiển thị giá trị trên mỗi ô.
+
+\subsection{Cách tạo Packed Bubbles}
+
+\noindent Tương tự Treemap nhưng thay \textbf{Mark Type = Circle}:
+
+\begin{enumerate}[nosep]
+    \item Kéo \textbf{\texttt{Sub-Category}} vào \textbf{Detail} --- mỗi giá trị thành một bọt.
+    \item Kéo \textbf{\texttt{Sales}} vào \textbf{Size} --- bọt lớn = doanh thu cao.
+    \item Kéo \textbf{\texttt{Category}} vào \textbf{Color} --- phân màu theo nhóm.
+    \item Chuyển \textbf{Mark Type} sang \textbf{Circle} (hoặc dùng \textbf{Show Me $\rightarrow$ Packed Bubbles}).
+    \item (Tùy chọn) Kéo \textbf{\texttt{Sub-Category}} vào \textbf{Label} để hiển thị tên trên mỗi bọt.
+\end{enumerate}
+
+\begin{tipbox}{Treemap vs Bar Chart: khi nào chọn Treemap?}
+Bar Chart vẫn \textbf{chính xác hơn} khi so sánh giá trị (mắt người đánh giá chiều dài tốt hơn diện tích). Treemap nổi bật khi:
+\begin{itemize}[nosep]
+    \item Dữ liệu có \textbf{phân cấp} (Category $\rightarrow$ Sub-Category $\rightarrow$ Product) --- Treemap thể hiện tự nhiên bằng ô lồng nhau
+    \item Có \textbf{rất nhiều danh mục} (20--50+) --- Bar Chart với 50 cột sẽ rất dài, Treemap gọn gàng hơn
+    \item Muốn nhấn mạnh \textbf{tỷ trọng} hơn là giá trị tuyệt đối
+\end{itemize}
+\end{tipbox}
+
+% ===================================================================
+\section{Tổng kết --- Chọn chart phù hợp trong 10 giây}
+% ===================================================================
+
+\noindent Sau khi đã quen với cả 10 loại biểu đồ, chúng ta có thể rút gọn quy trình chọn chart thành một flow đơn giản: nhìn vào \textbf{kiểu dữ liệu} và \textbf{mục đích phân tích} để quyết định ngay.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabularx}{\linewidth}{l X l l}
+\toprule
+\textbf{Loại biểu đồ} & \textbf{Câu hỏi trả lời} & \textbf{Trục X cần gì} & \textbf{Trục Y cần gì} \\
+\midrule
+\textbf{Bar Chart} & Cái nào lớn hơn/nhỏ hơn? & Dimension & Measure \\
+\textbf{Line Chart} & Xu hướng thay đổi thế nào? & Date (liên tục) & Measure \\
+\textbf{Area Chart} & Khối lượng + tỷ trọng theo thời gian? & Date (liên tục) & Measure \\
+\textbf{Scatter Plot} & Hai chỉ số liên quan thế nào? & Measure & Measure \\
+\textbf{Histogram} & Dữ liệu phân bố như thế nào? & Bins (liên tục) & Count \\
+\textbf{Box Plot} & Phân phối giữa các nhóm? & Dimension & Measure (disagg.) \\
+\textbf{Text Table} & Con số chính xác? Pattern? & Dimension & Dimension \\
+\textbf{Maps} & Vùng nào nổi bật? & Geographic & \textit{(tự động)} \\
+\textbf{Treemap} & Tỷ lệ phần trong tổng thể? & \textit{(không dùng shelf)} & \textit{(Size + Color)} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Bộ câu hỏi quyết định nhanh:}
+
+\begin{enumerate}[nosep]
+    \item Dữ liệu có \textbf{địa lý} không? $\rightarrow$ \textbf{Maps}
+    \item Trục X có phải \textbf{thời gian} không?
+    \begin{itemize}[nosep]
+        \item Muốn xem xu hướng? $\rightarrow$ \textbf{Line Chart}
+        \item Muốn xem khối lượng/tỷ trọng? $\rightarrow$ \textbf{Area Chart}
+    \end{itemize}
+    \item Cả 2 trục đều là \textbf{số}? $\rightarrow$ \textbf{Scatter Plot}
+    \item Muốn xem \textbf{phân phối}?
+    \begin{itemize}[nosep]
+        \item 1 nhóm? $\rightarrow$ \textbf{Histogram}
+        \item Nhiều nhóm so sánh? $\rightarrow$ \textbf{Box Plot}
+    \end{itemize}
+    \item Cần \textbf{con số chính xác}? $\rightarrow$ \textbf{Text Table} (thêm màu = \textbf{Highlight Table / Heat Map})
+    \item Muốn xem \textbf{tỷ trọng} với nhiều danh mục? $\rightarrow$ \textbf{Treemap / Packed Bubbles}
+    \item Còn lại (so sánh danh mục) $\rightarrow$ \textbf{Bar Chart}
+\end{enumerate}
+
+\begin{warningbox}{Cạm bẫy phổ biến --- Line Chart cho dữ liệu phân loại}
+Một sai lầm rất thường gặp là dùng Line Chart để so sánh các danh mục (ví dụ: 5 khu vực địa lý). Đường nối giữa ``North'' và ``East'' về mặt kỹ thuật được vẽ được, nhưng không có ý nghĩa thống kê --- ``North'' và ``East'' không có quan hệ liên tục. Bar Chart mới là lựa chọn đúng trong trường hợp này.
+\end{warningbox}
+
+\noindent \textbf{Tóm tắt:} Sử dụng bảng và bộ câu hỏi ở trên để chọn chart phù hợp cho mọi tình huống phân tích. Khi không chắc chắn, hãy thử nhiều loại và để câu hỏi kinh doanh dẫn dắt lựa chọn.
+
+\vspace{1em}
+\noindent \textit{Kết thúc phần Basic Charts. Tiếp theo: Bài tập tổng hợp.}
+
+\end{document}

@@ -215,3 +215,90 @@ Cấu trúc toàn bài đi từ bài toán đơn giản đến phức tạp:
 - [ ] Bullet list rõ ràng, bold đầu mỗi item?
 - [ ] Hộp thông tin đúng loại, đúng chỗ?
 - [ ] Không quá dài (≤ 2-3 trang/section)?
+
+---
+
+## 8. Mật độ văn bản — Tiêu chuẩn "đủ dày"
+
+### 8a. Tiêu chuẩn đoạn văn
+
+Đây là điểm **quan trọng nhất** mà bài viết sơ sài thường thiếu. Từ tài liệu mẫu AIO2025:
+
+| ❌ Sơ sài | ✅ Đúng chuẩn AIO2025 |
+|:---------|:----------------------|
+| Đoạn 1-2 câu | Đoạn **4-6 câu liên tục**, giải thích đầy đủ bối cảnh + lý do + ý nghĩa |
+| Bullet 1 dòng: tên hàm + chức năng | Bullet **2-3 dòng**: **bold tên**: giải thích cặn kẽ, ví dụ, tại sao quan trọng |
+| Bảng hàm không có ví dụ | Bảng → ví dụ code → giải thích output → lưu ý edge case |
+| "Hàm TRIM() xóa khoảng trắng" | "**TRIM()** xóa khoảng trắng ở **đầu và cuối** chuỗi — một lỗi cực kỳ phổ biến khi import dữ liệu từ CSV hoặc nhập tay. Nếu không loại bỏ khoảng trắng này, hai chuỗi `'Hà Nội'` và `' Hà Nội'` sẽ bị coi là hai giá trị khác nhau khi filter, dẫn đến kết quả sai." |
+
+### 8b. Tiêu chuẩn độ dài mỗi phần
+
+Dựa trên tài liệu mẫu (28 trang / 5 section lớn):
+
+| Phần | Độ dài tối thiểu | Nội dung bắt buộc |
+|:-----|:-----------------:|:-----------------|
+| **Giới thiệu section** | 2-3 đoạn văn | Bối cảnh → Vấn đề → Giải pháp (bao giờ cũng có hình tổng quan) |
+| **Subsection lý thuyết** | 1 đoạn giới thiệu + bảng/bullet chi tiết | Không bao giờ đặt bảng/bullet trực tiếp mà không có đoạn văn dẫn dắt |
+| **Subsection ví dụ** | 1 đoạn setup + code + 1 đoạn giải thích output | Code block không bao giờ đứng trơ trọi |
+| **Bullet item** | 2-3 dòng | **Bold tên**: 1-2 câu giải thích đủ nghĩa |
+| **Hàm/function** | Cú pháp + Use case + Ví dụ + Lưu ý | Không chỉ liệt kê "Hàm X làm Y" |
+
+### 8c. Pattern dẫn dắt trước subsection
+
+Tài liệu mẫu **không bao giờ** đặt bảng hay bullet ngay sau tiêu đề section. Luôn có 1-2 đoạn văn giới thiệu:
+
+```
+## II.1. Tên subsection
+
+[Đoạn 1: Giới thiệu tổng quan — subsection này nói về gì, tại sao cần,
+bối cảnh thực tế. 3-4 câu.]
+
+[Đoạn 2 (tùy chọn): Thu hẹp vào nội dung cụ thể sẽ trình bày. 2-3 câu.]
+
+[Bảng / Bullet / Code block — bây giờ mới xuất hiện]
+```
+
+**Ví dụ từ tài liệu mẫu (trang 4):**
+> *"smolagents là một thư viện đơn giản nhưng mạnh mẽ được phát triển bởi Hugging Face, giúp xây dựng các AI agents chỉ với vài dòng code. Mục tiêu chính của thư viện là đơn giản hóa quá trình phát triển ứng dụng AI thông minh, giảm thiểu sự phức tạp và các lớp trừu tượng không cần thiết vốn có ở nhiều framework hiện nay. Cụ thể, thư viện có các đặc điểm nổi bật sau:"*
+
+→ Sau đó mới xuất hiện bullet list. **Không bao giờ** bắt đầu bằng bullet ngay.
+
+### 8d. Tiêu chuẩn bullet item AIO2025
+
+Mỗi bullet phải có **cấu trúc đầy đủ**:
+
+```
+• **Tên tính năng/khái niệm:** Giải thích rõ ràng tính năng đó làm gì.
+  Nêu tại sao điều này quan trọng hoặc trường hợp sử dụng điển hình.
+  Có thể thêm ví dụ ngắn hoặc so sánh nếu cần.
+```
+
+**Ví dụ từ tài liệu mẫu (trang 4):**
+> *"• **Tính đơn giản tối đa:** Logic cho các agents trong smolagents chỉ khoảng 1000 dòng code, giúp code dễ đọc, dễ hiểu và dễ debug, giảm thiểu các lớp trừu tượng không cần thiết."*
+
+---
+
+## 9. Lỗi viết sơ sài — Cần tránh
+
+### 9a. Danh sách lỗi thường gặp
+
+| # | ❌ Lỗi | ✅ Cách sửa |
+|:-:|:------|:-----------|
+| 1 | Bảng hàm → xong, không có ví dụ thực tế | Sau bảng LUÔN có ví dụ code với output cụ thể |
+| 2 | Ví dụ code quá ngắn (1-2 dòng) | Ví dụ đủ context: setup + action + output + giải thích |
+| 3 | Bullet 1 dòng: "TRIM() — xóa khoảng trắng" | Bullet 2-3 dòng với use case và lý do quan trọng |
+| 4 | Section bắt đầu ngay bằng bảng/bullet | LUÔN có 1-2 đoạn văn dẫn dắt trước |
+| 5 | Giải thích hàm nhưng không nói khi nào dùng | Mỗi hàm: cú pháp + **khi nào dùng** + ví dụ |
+| 6 | Code không có comment giải thích | Thêm comment `//`, hoặc giải thích từng phần sau code |
+| 7 | Bảng không có câu giới thiệu | "Bảng X tổng hợp..." rồi mới đặt bảng |
+| 8 | Subsection quá ngắn (< 1 trang) | Mỗi subsection ít nhất 1 trang đầy đủ |
+
+### 9b. Self-check trước khi submit
+
+Trước khi nộp bài, đọc lại và tự hỏi:
+
+- **"Nếu tôi là sinh viên lần đầu học chủ đề này, tôi có hiểu không?"** — Nếu không, giải thích thêm.
+- **"Đoạn này có bị copy-paste kiểu reference table không?"** — Nếu có, biến thành văn xuôi.
+- **"Có bước nào bị bỏ qua vì tôi cho là 'sinh viên tự hiểu'?"** — Đừng assume, giải thích hết.
+- **"Ví dụ có đủ context để chạy không?"** — Phải có data, setup, expected output.
+
