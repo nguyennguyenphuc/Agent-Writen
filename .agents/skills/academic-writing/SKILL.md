@@ -1,4 +1,5 @@
 ---
+name: academic-writing
 description: Quy trình viết bài học thuật (tutorial, tài liệu giảng dạy) theo chuẩn AIO2025 — bao gồm research, đọc tài liệu, viết bài và xuất LaTeX
 ---
 
@@ -139,6 +140,32 @@ Viết từng section theo outline, tuân thủ **`writing_style_guide.md`**:
 - [ ] Code có giải thích trước + sau?
 - [ ] Câu nối chuyển tiếp sang section tiếp?
 - [ ] **Không** mở đầu bằng định nghĩa khô khan?
+
+## Bước 4.5: Kiểm tra dấu hiệu AI
+
+**QUAN TRỌNG:** Sau khi viết xong mỗi phần, Teacher PHẢI tự kiểm tra:
+
+- [ ] **Số lượng `---`:**
+  - Tối đa 2-3 `---` trong toàn bài
+  - Chỉ dùng giữa các phần lớn (I, II, III...)
+  - KHÔNG dùng giữa các subsection
+
+- [ ] **Độ dài câu:**
+  - Không câu nào quá 25 tỵ
+  - Chia nhỏ câu phức tạp
+
+- [ ] **Cụm từ máy móc:**
+  - "trong bối cảnh" → bỏ
+  - "theo như", "dựa trên" → thay
+  - "một cách", "về mặt" → bỏ
+  - "cần phải" → "cần"
+  - "được sử dụng" → "dùng"
+
+- [ ] **Đọc to kiểm tra:**
+  - Đọc to bài viết — có "kì kì" không?
+  - Tưởng tượng người nói chuyện — họ nói vậy không?
+
+Nếu phát hiện vi phạm, **SỬA NGAY** trước khi sang bước tiếp theo.
 
 ## Bước 5: Self-review (Teacher)
 

@@ -1,4 +1,5 @@
 ---
+name: teacher-student-debate
 description: Quy trình Teacher-Student debate để ra đề, review và tinh chỉnh đề thi cho bất kỳ chủ đề nào
 ---
 

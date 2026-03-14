@@ -1,0 +1,1243 @@
+% ===================================================================
+% Phân tích nâng cao trong Tableau — Calculated Fields, Filters, Parameters
+% Xuất từ: tableau_calculated_filters_parameters_v2.md
+% ===================================================================
+\documentclass[12pt]{article}
+\usepackage[utf8]{vietnam}
+\usepackage[vietnamese=nohyphenation]{hyphsubst}
+\usepackage[vietnamese]{babel}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{booktabs}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{multicol}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{forest}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{bm} 
+\usepackage[inkscapelatex=false]{svg}
+\usepackage{titling}
+\usepackage{tabularx}
+\usepackage{makecell} 
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,mathrsfs}
+\usepackage{hyperref}
+\usepackage{xparse}
+\usepackage[most]{tcolorbox}
+
+%  biblatex ------------------------------------
+\usepackage[
+    backend=bibtex,
+    style=ieee,
+    maxnames=1,
+    minnames=1,
+    uniquelist=false,
+    hyperref=false
+]{biblatex}
+
+\addbibresource{references.bib}
+\DefineBibliographyStrings{english}{
+  andothers = {et\addabbrvspace al\adddot}
+}
+\AtBeginBibliography{\selectlanguage{english}}
+\AtBeginDocument{\renewcommand\refname{}}
+
+\usepackage[toc,page]{appendix}
+\renewcommand{\appendixtocname}{Phụ lục}      
+\renewcommand{\appendixpagename}{Phụ lục}
+
+\usepackage{xurl}
+\setlength{\headheight}{14.5pt}
+\setlength{\topmargin}{-.5in} \setlength{\textheight}{9.25in}
+\setlength{\oddsidemargin}{-0.1in} \setlength{\textwidth}{6.8in}
+
+\usepackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\Huge\bfseries}
+\setlength{\cftaftertoctitleskip}{2em}
+\setlength{\cftbeforesubsecskip}{7pt}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftsecnumwidth}{3em}
+\renewcommand{\cftsecaftersnum}{\quad}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftsubsecnumwidth}{4em}
+\renewcommand{\cftsubsecaftersnum}{\quad}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+\setlength   {\cftsubsubsecnumwidth}{5em}  
+\renewcommand{\cftsubsubsecaftersnum}{\quad}
+
+\PassOptionsToPackage{vietnamese.licr}{babel}
+\usepackage{vipythonhighlight} 
+\newcounter{mycounter}
+\newcommand\showmycounter{\stepcounter{mycounter}\themycounter}
+\usepackage{lipsum}
+\newcommand\showlips{\stepcounter{mycounter}\lipsum[\value{mycounter}]}
+
+\usepackage{framed}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{tvietlistings}
+\usepackage{epigraph}
+\usepackage{titlesec}
+\usepackage{fontawesome5}
+
+% Color --------------------------------------------------------------------
+\definecolor{codebackground}{RGB}{250, 250, 250}
+\definecolor{codecomment}{RGB}{34, 139, 34}
+\definecolor{codekeyword}{RGB}{0, 0, 255}
+\definecolor{codestring}{RGB}{255, 0, 0}
+\definecolor{codeidentifier}{RGB}{0, 0, 0}
+\definecolor{codelinenumbers}{RGB}{90, 90, 90}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\definecolor{aivnGreen}{RGB}{52,79,30}  
+\definecolor{captiongray}{gray}{0.15} 
+\definecolor{captionbg}{RGB}{250,250,250}
+
+% Box definitions ----------------------------------------------------------
+% Table caption
+\newtcolorbox{captionbelowboxaivn}{
+    colback=aivnGreen, colframe=aivnGreen, boxrule=0pt, arc=4pt,
+    left=4pt, right=4pt, top=2pt, bottom=2pt,
+    width=\linewidth, boxsep=4pt, halign=center,
+    fontupper=\color{white}
+}
+
+% Figure caption (green)
+\newtcolorbox{figurecardcaptionaivn}{
+  colback=aivnGreen, colframe=aivnGreen, boxrule=0pt, arc=2pt,
+  top=3pt, bottom=3pt, left=10pt, right=10pt,
+  width=\linewidth,
+  fontupper=\small\fontsize{11pt}{13pt}\selectfont\color{white} 
+}
+
+% Figure caption (modern)
+\newcounter{hinh}
+\newcommand{\capfig}[1]{%
+  \refstepcounter{hinh}%
+    Hình~\thehinh:~#1
+}
+
+\newtcolorbox{figurecaptionmodern}{
+  colback=captionbg, colframe=aivnGreen, boxrule=1.5pt, bottomrule=2pt,
+  toptitle=0pt, bottomtitle=0pt,
+  left=6pt, right=6pt, top=4pt, bottom=2pt,
+  width=\linewidth,
+  fontupper=\small\fontsize{11pt}{13pt}\selectfont\color{black},
+  halign=center
+}
+
+% Code Block
+\newtcolorbox{aivncodebox}[1][]{%
+  enhanced, colback=gray!10, colframe=aivnGreen,
+  coltitle=white, colbacktitle=aivnGreen,
+  title=#1, fonttitle=\bfseries\sffamily,
+  listing only, breakable, listing engine=listings,
+  listing options={
+    language=Python, basicstyle=\ttfamily\footnotesize,
+    commentstyle=\color{ForestGreen}, keywordstyle=\color{blue},
+    stringstyle=\color{red!70!black}, numbers=left,
+    numberstyle=\tiny\color{gray}, numbersep=5pt,
+    breaklines=true, showstringspaces=false,
+    xleftmargin=1.5em, framexleftmargin=1.5em
+  }
+}
+
+% Concept box
+\newtcolorbox{conceptbox}[2][]{
+    enhanced, colback=green!6!white, colframe=aivnGreen, boxrule=1pt, arc=4pt,
+    fonttitle=\bfseries, attach boxed title to top left={yshift=-2mm, xshift=3mm},
+    colbacktitle=aivnGreen, coltitle=white, title=#2, #1
+}
+
+% Guideline box (tip)
+\newtcolorbox{guidelinebox}[2][]{
+    enhanced, colback=yellow!10!white, colframe=orange!90!black, boxrule=1pt, arc=4pt,
+    fonttitle=\bfseries, attach boxed title to top left={yshift=-2mm, xshift=3mm},
+    colbacktitle=orange!90!black, coltitle=white,
+    title=\faLightbulb\hspace{1mm} #2, #1
+}
+
+% Note box
+\newtcolorbox{notebox}[1][]{
+  enhanced, colback=yellow!10, colframe=orange!80, boxrule=1pt,
+  arc=4pt, fontupper=\small, attach boxed title to top left={yshift=-2mm, xshift=3mm},
+  colbacktitle=orange!80, coltitle=white, fonttitle=\bfseries,
+  title=\faInfoCircle~\textbf{Lưu ý}, #1
+}
+
+% Listings style
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{codebackground},
+    commentstyle=\color{codecomment},
+    keywordstyle=\color{codekeyword},
+    stringstyle=\color{codestring},
+    identifierstyle=\color{codeidentifier},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false, breaklines=true, captionpos=b,
+    keepspaces=true, numbers=left,
+    numberstyle=\tiny\color{codelinenumbers}, 
+    numbersep=5pt, showspaces=false, showstringspaces=false,
+    showtabs=false, tabsize=2
+}
+\lstset{style=mystyle}
+
+\hypersetup{
+    colorlinks=true, linkcolor=black, filecolor=magenta,    
+    citecolor=black, urlcolor=black,
+    pdftitle={Overleaf Example}, pdfpagemode=FullScreen,
+}
+
+% Outline --------------------------------------------------------------------
+\renewcommand{\thesection}{\Roman{section}.} 
+\renewcommand{\thesubsection}{\thesection\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{\thesubsection\arabic{subsubsection}.} 
+
+\titleformat{\section}{\normalfont\Huge\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Multiple choice
+\newcounter{choice}
+\renewcommand\thechoice{($\alph{choice}$)}
+\newcommand\choicelabel{\thechoice}
+
+\newenvironment{choices}%
+  {\list{\choicelabel}%
+     {\usecounter{choice}\def\makelabel##1{\hss\llap{##1}}%
+       \settowidth{\leftmargin}{W.\hskip\labelsep\hskip 0 em}%
+       \def\choice{\item}%
+       \labelwidth\leftmargin\advance\labelwidth-\labelsep
+       \topsep=0pt \partopsep=0pt
+     }%
+  }%
+  {\endlist}
+
+\lstset{style=mystyle}
+\pagestyle{fancy}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+% Logo --------------------------------------------------------------------
+\setlength{\droptitle}{-8em}
+\pretitle{%
+    \begin{flushleft}
+        \includegraphics[height=2.0cm]{Figures/logo.pdf}\par
+    \end{flushleft}
+}
+\posttitle{}
+
+% Title --------------------------------------------------------------------
+\title{%
+  \begin{center}
+        \Large {AI VIET NAM -- AI COURSE 2025}\\[.5ex]  
+        \Huge \textbf{Tutorial: Tableau}\\[.5ex]
+  \end{center}
+}
+
+% Author --------------------------------------------------------------------
+\posttitle{
+    \author{
+        \begin{minipage}{\textwidth}
+        \centering
+        {
+          Thao-Nhi,\quad
+          Anh-Nguyen
+        }\\
+      \end{minipage}
+    }
+}
+\date{}
+
+% Header --------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\href{https://www.facebook.com/aivietnam.edu.vn}{\textcolor{aivnGreen}{\bfseries AI VIET NAM (AIO2025)}}}
+\rhead{\href{https://aivietnam.edu.vn/}{\textcolor{aivnGreen}{\bfseries aivietnam.edu.vn}}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1.0pt}
+\renewcommand{\headrule}{{\color{aivnGreen}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}}
+
+% ===================================================================
+% DOCUMENT
+% ===================================================================
+\begin{document}
+\maketitle
+\vspace{-3.5em}
+
+% ===================================================================
+% SECTION V — Giới thiệu (Calculated Fields, Filters, Parameters)
+% ===================================================================
+\section{Giới thiệu --- Từ ``nhìn dữ liệu'' đến ``hiểu dữ liệu''}
+\label{section:intro-advanced}
+
+\begin{conceptbox}{Dataset sử dụng trong ví dụ}
+\textbf{Tableau Superstore} --- bộ dữ liệu mẫu có sẵn trong Tableau Desktop, tại menu \textbf{Help $\rightarrow$ Sample Workbooks $\rightarrow$ Superstore}. Dataset gồm $\sim$10.000 dòng đơn hàng bán lẻ với các trường về sản phẩm, khách hàng, doanh thu và lợi nhuận.
+\end{conceptbox}
+
+\noindent Ở buổi trước, chúng ta đã nắm được cách tạo các biểu đồ cơ bản --- Bar Chart, Line Chart, Scatter Plot, Text Table --- và dùng Preprocessing Functions để làm sạch dữ liệu. Đó là những kỹ năng nền tảng cho phép bạn trình bày thông tin trực quan.
+
+\noindent Nhưng một nhà phân tích dữ liệu giỏi không chỉ ``nhìn'' được dữ liệu. Họ còn phải ``hiểu'' được dữ liệu --- biết đặt câu hỏi đúng, lọc ra thông tin cốt lõi, và tạo ra những chỉ số mới phục vụ mục tiêu cụ thể. Chẳng hạn: ``Khách hàng nào mang lại lợi nhuận cao nhất?'', ``Doanh thu khu vực nào đang giảm?'', hay ``Nếu ngưỡng VIP thay đổi thì danh sách khách hàng sẽ khác thế nào?''.
+
+\noindent Trong buổi học này, chúng ta sẽ trang bị 3 công cụ mạnh mẽ nhất của Tableau để trả lời những câu hỏi đó:
+
+\begin{itemize}
+    \item \textbf{Calculated Fields} --- tạo chỉ số mới từ dữ liệu hiện có (ví dụ: tỷ suất lợi nhuận, phân loại khách hàng)
+    \item \textbf{Filters} --- lọc dữ liệu để tập trung vào phần quan trọng (ví dụ: chỉ xem năm 2024, chỉ xem khách VIP)
+    \item \textbf{Parameters} --- tạo dashboard tương tác, cho phép người dùng tự chọn cách nhìn dữ liệu mà không cần viết code
+\end{itemize}
+
+\noindent Ba công cụ này bổ trợ cho nhau: Calculated Fields tạo ra chỉ số, Filters lọc theo chỉ số đó, và Parameters cho phép người dùng thay đổi tiêu chí lọc một cách linh hoạt. Kết hợp cả ba, bạn sẽ xây dựng được những dashboard chuyên nghiệp mà bất kỳ ai cũng có thể sử dụng.
+
+\noindent Hãy bắt đầu với Calculated Fields --- công cụ mà hầu như mọi dashboard chuyên nghiệp đều sử dụng.
+
+\newpage
+\setcounter{tocdepth}{2}
+\tableofcontents
+\thispagestyle{fancy}
+
+% ===================================================================
+% SECTION VI — Calculated Fields nâng cao
+% ===================================================================
+\newpage
+\section{Calculated Fields nâng cao --- Tạo chỉ số mới từ dữ liệu}
+\label{section:calculated-fields}
+
+% -------------------------------------------------------------------
+\subsection{Tổng quan về Calculated Fields}
+% -------------------------------------------------------------------
+
+\noindent \textbf{Calculated Fields} (trường tính toán) là cách tạo cột dữ liệu mới bằng cách viết biểu thức trực tiếp trong Tableau. Ở buổi trước, chúng ta đã dùng Calculated Fields cho các tác vụ \textbf{preprocessing} --- chuyển đổi kiểu dữ liệu, làm sạch chuỗi, xử lý ngày tháng. Nhưng sức mạnh thực sự của Calculated Fields nằm ở khả năng tạo ra những \textbf{chỉ số phân tích} (analytics metrics) hoàn toàn mới --- những thứ không tồn tại trong dữ liệu gốc nhưng cực kỳ có giá trị cho việc ra quyết định kinh doanh.
+
+\noindent Tableau hỗ trợ \textbf{2 cách tạo} Calculated Field:
+
+\noindent \textbf{Cách 1 --- Dùng Calculated Field Editor (phổ biến nhất):}
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào vùng trống trong \textbf{Data Pane} $\rightarrow$ chọn \textbf{Create Calculated Field...}
+    \item Hoặc vào menu \textbf{Analysis} $\rightarrow$ \textbf{Create Calculated Field}
+    \item Viết biểu thức trong cửa sổ Editor $\rightarrow$ nhấn \textbf{OK}
+    \item Field mới xuất hiện trong Data Pane, sẵn sàng để kéo vào view
+\end{enumerate}
+
+\noindent \textbf{Cách 2 --- Ad-hoc Calculation (tính nhanh, không lưu):}
+
+\noindent Nếu chỉ cần tính nhanh một biểu thức đơn giản, bạn có thể nhập trực tiếp trên \textbf{Columns}, \textbf{Rows}, hoặc thẻ \textbf{Marks} mà không cần mở Editor. Ví dụ: double-click vào Columns shelf $\rightarrow$ gõ \texttt{SUM([Profit])/SUM([Sales])} $\rightarrow$ nhấn Enter. Tableau sẽ hiện kết quả ngay lập tức. Nếu muốn lưu lại Ad-hoc calculation, kéo nó vào Data Pane và đặt tên.
+
+\noindent \textbf{Cách đọc Formula Editor:}
+
+\noindent Khi viết công thức trong Calculated Field Editor, chú ý các \textbf{màu sắc} --- chúng giúp bạn phát hiện lỗi nhanh:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+\textbf{Màu / Ký hiệu} & \textbf{Ý nghĩa} \\
+\midrule
+\textbf{Dòng chữ màu đỏ} & Lỗi cú pháp --- di chuột qua để xem hướng dẫn sửa \\
+\texttt{// văn bản màu xám} & Comment --- không ảnh hưởng tính toán \\
+\textbf{[text màu cam]} & Tên trường dữ liệu \\
+\textbf{text màu xanh ()} & Tên hàm (function) \\
+\textbf{[text màu tím]} & Tên parameter \\
+\textbf{text in đậm} & Phép tính aggregate (tính cùng kết quả tổng hợp) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Khi Editor hiện ``The calculation contains errors'' ở góc dưới, nghĩa là công thức có lỗi --- kiểm tra dòng đỏ để sửa. Khi hiện ``The calculation is valid'', bạn đã sẵn sàng nhấn OK.
+
+% -------------------------------------------------------------------
+\subsection{Row-level vs Aggregate --- Hai cấp độ tính toán}
+% -------------------------------------------------------------------
+
+\noindent Tableau phân biệt rõ 2 cấp độ tính toán trong Calculated Fields. Hiểu sai sẽ cho kết quả sai hoàn toàn, nên chúng ta sẽ đi qua ví dụ cụ thể.
+
+\noindent Giả sử dataset Superstore có 4 dòng đơn hàng \textit{(dữ liệu minh họa, không phải bản ghi thật từ Superstore)}:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{c l r r}
+\toprule
+\textbf{Dòng} & \textbf{Region} & \textbf{Sales} & \textbf{Discount} \\
+\midrule
+1 & East & 200 & 0.1 \\
+2 & East & 300 & 0.2 \\
+3 & West & 500 & 0.15 \\
+4 & West & 100 & 0.05 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Row-level (cấp dòng)} --- tính trên \textbf{từng dòng riêng lẻ}, trước khi Tableau gộp nhóm:
+
+\noindent Ví dụ: tạo Calculated Field \texttt{[Sales] * [Discount]} (giảm giá mỗi đơn):
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{c l r r r}
+\toprule
+\textbf{Dòng} & \textbf{Region} & \textbf{Sales} & \textbf{Discount} & \textbf{Sales * Discount} \\
+\midrule
+1 & East & 200 & 0.1 & \textbf{20} \\
+2 & East & 300 & 0.2 & \textbf{60} \\
+3 & West & 500 & 0.15 & \textbf{75} \\
+4 & West & 100 & 0.05 & \textbf{5} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Mỗi dòng tự tính cho mình --- dòng 1 chỉ cần Sales=200 và Discount=0.1 của chính nó, không cần biết dòng khác. Đây là \textbf{row-level}.
+
+\noindent \textbf{Aggregate (cấp nhóm)} --- tính trên \textbf{nhóm dòng}, sau khi Tableau gộp theo dimensions trong view:
+
+\noindent Ví dụ: tạo Calculated Field \texttt{SUM([Sales]) / COUNT([Sales])} (doanh thu trung bình). Nếu view có Region trên Rows, Tableau gộp thành 2 nhóm rồi mới tính:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X r}
+\toprule
+\textbf{Region} & \textbf{Các dòng thuộc nhóm} & \textbf{SUM(Sales) / COUNT(Sales)} \\
+\midrule
+East & dòng 1 + dòng 2 & (200+300) / 2 = \textbf{250} \\
+West & dòng 3 + dòng 4 & (500+100) / 2 = \textbf{300} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Kết quả phụ thuộc vào \textbf{dimensions trong view}: nếu bỏ Region ra khỏi view, Tableau gộp cả 4 dòng thành 1 nhóm $\rightarrow$ kết quả: (200+300+500+100) / 4 = 275. Nếu thêm Sub-Category vào view, Tableau chia thành nhiều nhóm nhỏ hơn $\rightarrow$ kết quả khác nữa.
+
+\noindent \textbf{Tóm lại:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+ & \textbf{Row-level} & \textbf{Aggregate} \\
+\midrule
+\textbf{Tính khi nào} & Trước khi gộp nhóm & Sau khi gộp nhóm \\
+\textbf{Cần gì} & Chỉ thông tin từ 1 dòng & Thông tin từ nhiều dòng \\
+\textbf{Kết quả đổi khi đổi view?} & Không --- giá trị mỗi dòng cố định & Có --- phụ thuộc dimensions trong view \\
+\textbf{Nhận biết} & Không có hàm \texttt{SUM}, \texttt{AVG}... & Có hàm \texttt{SUM()}, \texttt{AVG()}, \texttt{COUNT()}... \\
+\textbf{Ví dụ} & \texttt{[Sales] * 0.1}, \texttt{DATEDIFF(...)} & \texttt{SUM([Sales])}, \texttt{AVG([Profit])} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Lỗi thường gặp --- ``Cannot mix aggregate and non-aggregate'':}
+
+\noindent Khi bạn trộn lẫn 2 cấp trong cùng công thức, Tableau không biết xử lý thế nào và báo lỗi. Ví dụ:
+
+\begin{aivncodebox}[]
+\begin{python}
+// ❌ Lỗi: SUM là aggregate, [Discount] là row-level
+SUM([Sales]) * [Discount]
+\end{python}
+\end{aivncodebox}
+
+\noindent Tableau không thể nhân tổng doanh thu cả nhóm (1 giá trị) với Discount từng dòng (nhiều giá trị). Giải pháp --- đưa về cùng cấp:
+
+\begin{aivncodebox}[]
+\begin{python}
+// ✅ Cách 1: cả hai đều aggregate
+SUM([Sales]) * AVG([Discount])
+
+// ✅ Cách 2: cả hai đều row-level
+[Sales] * [Discount]
+\end{python}
+\end{aivncodebox}
+
+\noindent Cách 1 cho kết quả ``tổng doanh thu $\times$ discount trung bình'' (1 giá trị cho mỗi nhóm). Cách 2 cho ``doanh thu $\times$ discount từng dòng'' (1 giá trị cho mỗi dòng, Tableau tự SUM khi hiển thị).
+
+\begin{guidelinebox}{Nhận biết cấp độ trên view}
+Khi kéo Calculated Field vào view, nhìn vào pill trên shelf: nếu pill hiển thị \texttt{SUM(...)} hoặc \texttt{AVG(...)} tức là Tableau đang aggregate. Nếu hiển thị tên field trực tiếp (không có hàm bao quanh) tức là row-level. Bạn cũng có thể click vào pill $\rightarrow$ chọn \textbf{Measure} và thay đổi kiểu aggregate mặc định.
+\end{guidelinebox}
+
+% -------------------------------------------------------------------
+\subsection{Các hàm Aggregation thường dùng}
+% -------------------------------------------------------------------
+
+\noindent Khi viết Calculated Fields ở cấp aggregate, bạn sẽ dùng các hàm tổng hợp. Bảng dưới đây tóm tắt những hàm phổ biến nhất cùng ví dụ thực tế trên dataset Superstore:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l l X X}
+\toprule
+\textbf{Hàm} & \textbf{Ý nghĩa} & \textbf{Ví dụ} & \textbf{Khi nào dùng} \\
+\midrule
+\texttt{SUM()} & Tổng tất cả giá trị & \texttt{SUM([Sales])} $\rightarrow$ tổng doanh thu & So sánh tổng giữa các nhóm \\
+\texttt{AVG()} & Trung bình cộng & \texttt{AVG([Profit])} $\rightarrow$ lợi nhuận TB & Đánh giá mức trung bình \\
+\texttt{MIN()} & Giá trị nhỏ nhất & \texttt{MIN([Order Date])} $\rightarrow$ ngày đầu & Tìm giá trị cực tiểu \\
+\texttt{MAX()} & Giá trị lớn nhất & \texttt{MAX([Order Date])} $\rightarrow$ ngày cuối & Tìm giá trị cực đại \\
+\texttt{COUNT()} & Đếm số dòng & \texttt{COUNT([Order ID])} $\rightarrow$ tổng số đơn & Đếm bản ghi (có trùng) \\
+\texttt{COUNTD()} & Đếm giá trị duy nhất & \texttt{COUNTD([Customer ID])} $\rightarrow$ số KH & Đếm không trùng \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{notebox}
+\textbf{COUNTD chậm với dữ liệu lớn.} Hàm \texttt{COUNTD()} (Count Distinct) phải quét và so sánh từng giá trị để loại trùng, nên tốn tài nguyên hơn \texttt{COUNT()} đáng kể. Với dataset lớn (hàng triệu dòng), nên cân nhắc dùng \texttt{COUNT()} kết hợp với cách tổ chức dữ liệu hợp lý thay vì dùng \texttt{COUNTD()} ở nhiều nơi.
+\end{notebox}
+
+% -------------------------------------------------------------------
+\subsection{Ví dụ thực tế --- Tạo chỉ số kinh doanh}
+% -------------------------------------------------------------------
+
+\noindent Chúng ta sẽ tạo một số chỉ số quan trọng từ dataset Superstore. Mỗi ví dụ đều đi kèm giải thích chi tiết:
+
+\subsubsection{Tỷ suất lợi nhuận (Profit Margin)}
+
+\noindent Tỷ suất lợi nhuận cho biết cứ mỗi đồng doanh thu, bạn giữ lại bao nhiêu đồng lợi nhuận. Đây là chỉ số then chốt để đánh giá hiệu quả kinh doanh:
+
+\begin{aivncodebox}[]
+\begin{python}
+// Tỷ suất lợi nhuận = Lợi nhuận / Doanh thu
+// ZN() chuyển NULL thành 0 — tránh lỗi chia cho NULL
+ZN(SUM([Profit])) / ZN(SUM([Sales]))
+\end{python}
+\end{aivncodebox}
+
+\noindent Sau khi tạo, kéo field này vào view và format thành \textbf{Percentage} (click chuột phải vào pill $\rightarrow$ \textbf{Format} $\rightarrow$ \textbf{Numbers} $\rightarrow$ \textbf{Percentage}). Giá trị 0.25 nghĩa là cứ 100 đồng doanh thu, bạn lãi 25 đồng.
+
+\subsubsection{Doanh thu trung bình mỗi đơn hàng (Average Order Value)}
+
+\noindent Chỉ số này giúp đánh giá giá trị trung bình mỗi giao dịch --- doanh thu cao có thể do nhiều đơn nhỏ hoặc ít đơn lớn:
+
+\begin{aivncodebox}[]
+\begin{python}
+// Tổng doanh thu / Tổng số đơn hàng
+SUM([Sales]) / COUNTD([Order ID])
+\end{python}
+\end{aivncodebox}
+
+\noindent Lưu ý: dùng \texttt{COUNTD} thay vì \texttt{COUNT} vì mỗi Order ID có thể xuất hiện nhiều lần (một đơn hàng chứa nhiều sản phẩm). \texttt{COUNTD} chỉ đếm mỗi đơn một lần.
+
+\subsubsection{Số ngày giao hàng (Delivery Days)}
+
+\noindent Chỉ số này là \textbf{row-level} vì chỉ cần thông tin từ một dòng (ngày đặt + ngày giao):
+
+\begin{aivncodebox}[]
+\begin{python}
+// Số ngày từ lúc đặt đến lúc giao
+DATEDIFF('day', [Order Date], [Ship Date])
+\end{python}
+\end{aivncodebox}
+
+\noindent \texttt{DATEDIFF} nhận 3 tham số: đơn vị thời gian (\texttt{'day'}, \texttt{'month'}, \texttt{'year'}...), ngày bắt đầu, ngày kết thúc. Kết quả là số nguyên --- ví dụ 3 nghĩa là giao sau 3 ngày.
+
+\noindent Hàm ngược lại của \texttt{DATEDIFF} là \textbf{\texttt{DATEADD}} --- cộng thêm khoảng thời gian vào một ngày:
+
+\begin{aivncodebox}[]
+\begin{python}
+// Ngày dự kiến giao hàng = Order Date + 5 ngày
+DATEADD('day', 5, [Order Date])
+\end{python}
+\end{aivncodebox}
+
+\noindent \texttt{DATEADD} nhận 3 tham số: \texttt{DATEADD('đơn\_vị', số\_lượng, trường\_ngày)}. Ví dụ: \texttt{DATEADD('month', 3, [Order Date])} cho ra ngày sau 3 tháng. Hai hàm này là cặp đôi không thể thiếu khi phân tích dữ liệu theo thời gian.
+
+\subsubsection{Phân loại khách hàng theo doanh thu (Customer Tier)}
+
+\noindent Phân loại khách hàng thành các nhóm giúp tập trung nguồn lực vào nhóm quan trọng nhất:
+
+\begin{aivncodebox}[]
+\begin{python}
+// Phân loại dựa trên tổng doanh thu mỗi khách hàng
+IF SUM([Sales]) > 10000 THEN "VIP"
+ELSEIF SUM([Sales]) > 5000 THEN "Regular"
+ELSE "New"
+END
+\end{python}
+\end{aivncodebox}
+
+\noindent Field này là \textbf{aggregate} (dùng \texttt{SUM}), nên kết quả phụ thuộc vào dimensions trong view. Nếu view có Customer Name, mỗi khách hàng sẽ được phân loại riêng. Nếu view có Region, phân loại sẽ dựa trên tổng doanh thu cả region.
+
+\begin{guidelinebox}{Dùng CASE thay IF khi logic đơn giản}
+Khi so sánh một field với nhiều giá trị cố định, \texttt{CASE} thường nhanh hơn chuỗi \texttt{IF/ELSEIF} dài. Ví dụ: \texttt{CASE [Ship Mode] WHEN "First Class" THEN 1 WHEN "Second Class" THEN 2 ELSE 3 END}. Tableau optimize \texttt{CASE} tốt hơn vì nó biết trước đang so sánh cùng một field.
+\end{guidelinebox}
+
+
+% -------------------------------------------------------------------
+\subsection{LOD Expressions --- Tính toán ở mức chi tiết khác}
+% -------------------------------------------------------------------
+
+\noindent \textbf{LOD (Level of Detail) Expressions} là tính năng nâng cao nhưng cực kỳ mạnh mẽ --- và cũng là chủ đề phức tạp nhất trong buổi học này. Đừng lo nếu chưa hiểu ngay lần đầu --- chúng ta sẽ bắt đầu với loại phổ biến nhất (FIXED) rồi mới đến INCLUDE và EXCLUDE.
+
+\noindent Bình thường, khi bạn viết \texttt{SUM([Sales])}, Tableau tự động tính tổng theo các dimensions có trong view (ví dụ: nếu view có Region, Tableau tính SUM cho từng Region). LOD cho phép bạn \textbf{bỏ qua} mức chi tiết đang hiển thị và tính ở mức bạn muốn.
+
+\noindent Ví dụ đơn giản: bạn muốn biết tổng doanh thu của \textbf{mỗi khách hàng}, bất kể view đang hiển thị theo Region hay Category. Với cách thông thường, bạn phải kéo Customer Name vào view. Với LOD, chỉ cần viết:
+
+\begin{aivncodebox}[]
+\begin{python}
+{ FIXED [Customer Name] : SUM([Sales]) }
+\end{python}
+\end{aivncodebox}
+
+\noindent Công thức này nói: ``Tính tổng doanh thu, nhóm theo Customer Name, bất kể view đang hiển thị gì.''
+
+\noindent Tableau có \textbf{3 loại LOD}, mỗi loại phục vụ mục đích khác nhau:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabularx}{\linewidth}{l l X X}
+\toprule
+\textbf{Loại} & \textbf{Cú pháp} & \textbf{Ý nghĩa} & \textbf{Ví dụ} \\
+\midrule
+\textbf{FIXED} & \texttt{\{ FIXED [Dim] : AGG() \}} & Tính theo dimensions \textbf{chỉ định}, bỏ qua mọi thứ khác trong view & \texttt{\{ FIXED [Region] : SUM([Sales]) \}} \\
+\textbf{INCLUDE} & \texttt{\{ INCLUDE [Dim] : AGG() \}} & \textbf{Thêm} dimensions vào mức hiện tại --- kết quả chi tiết hơn view & \texttt{\{ INCLUDE [Category] : AVG([Profit]) \}} \\
+\textbf{EXCLUDE} & \texttt{\{ EXCLUDE [Dim] : AGG() \}} & \textbf{Loại bỏ} dimensions khỏi mức hiện tại --- kết quả tổng quát hơn view & \texttt{\{ EXCLUDE [Region] : SUM([Sales]) \}} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Ví dụ so sánh trực quan:}
+
+\noindent Giả sử view đang hiển thị doanh thu theo \textbf{Category} (Furniture, Office Supplies, Technology):
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabularx}{\linewidth}{X r r r X}
+\toprule
+\textbf{Công thức} & \textbf{Furniture} & \textbf{Office S.} & \textbf{Technology} & \textbf{Giải thích} \\
+\midrule
+\texttt{SUM([Sales])} & 741K & 719K & 836K & Tính theo từng Category \\
+\texttt{\{ FIXED : SUM([Sales]) \}} & 2,297K & 2,297K & 2,297K & Tổng toàn bộ, không phân nhóm \\
+\texttt{\{ EXCLUDE [Cat.] : ... \}} & 2,297K & 2,297K & 2,297K & Bỏ qua Category \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Khi nào dùng loại nào? Nếu bạn cần một giá trị cố định để so sánh (như ``tổng doanh thu toàn công ty''), dùng \textbf{FIXED}. Nếu cần tính chi tiết hơn view hiện tại, dùng \textbf{INCLUDE}. Nếu cần bỏ qua một dimension trong view, dùng \textbf{EXCLUDE}.
+
+\begin{guidelinebox}{Tạo LOD nhanh bằng Ctrl+Drag}
+Từ phiên bản mới, bạn có thể tạo FIXED LOD nhanh mà không cần mở Editor: giữ phím \textbf{Ctrl} rồi kéo một measure lên trên một dimension. Ví dụ: giữ Ctrl, kéo \textbf{Balance} thả vào \textbf{Portfolio} $\rightarrow$ Tableau tự tạo calculated field \texttt{\{ FIXED [Portfolio] : SUM([Balance]) \}}.
+\end{guidelinebox}
+
+\begin{notebox}
+\textbf{FIXED LOD và Filters.} FIXED LOD được tính toán \textbf{trước} Dimension Filters trong Order of Operations của Tableau. Nghĩa là nếu bạn lọc Region = ``East'', FIXED LOD vẫn tính trên \textbf{toàn bộ} dữ liệu (bao gồm cả West, Central, South). Muốn FIXED LOD bị ảnh hưởng bởi filter, bạn cần đặt filter đó làm \textbf{Context Filter} (sẽ học ở phần III).
+\end{notebox}
+
+% -------------------------------------------------------------------
+\subsection{Order of Operations --- Thứ tự Tableau xử lý dữ liệu}
+% -------------------------------------------------------------------
+
+\noindent Khi bạn xây dựng view với nhiều Calculated Fields, Filters, và LOD, Tableau thực hiện mọi thứ theo một \textbf{thứ tự cố định}. Hiểu thứ tự này giúp bạn tránh kết quả sai và debug hiệu quả.
+
+\noindent Thứ tự từ sớm nhất đến muộn nhất (theo Tableau official documentation):
+
+\begin{aivncodebox}[]
+\begin{python}
+1. [Extract Filters]         — lọc khi tạo extract
+2. [Data Source Filters]     — lọc tại nguồn dữ liệu
+3. [Context Filters]         — tạo "bối cảnh" cho các filter sau
+4. [Sets, FIXED LOD, Top N]  — Sets, FIXED LOD tính ở đây
+5. [Dimension Filters]       — lọc theo categories
+6. [INCLUDE/EXCLUDE LOD]     — INCLUDE, EXCLUDE tính ở đây
+7. [Measure Filters]         — lọc theo giá trị số (SUM > X)
+8. [Table Calculations]      — Running Total, Rank, Percent...
+9. [Table Calc Filters]      — lọc trên kết quả Table Calculations
+\end{python}
+\end{aivncodebox}
+
+\noindent \textbf{Ý nghĩa thực tế:}
+\begin{itemize}[nosep]
+    \item \textbf{FIXED LOD} (bước 4) nằm \textbf{trước} Dimension Filters (bước 5) $\rightarrow$ filter thông thường không ảnh hưởng FIXED
+    \item \textbf{INCLUDE/EXCLUDE} (bước 6) nằm \textbf{sau} Dimension Filters (bước 5) $\rightarrow$ filter thông thường ảnh hưởng INCLUDE/EXCLUDE
+    \item \textbf{Context Filters} (bước 3) nằm \textbf{trước} FIXED LOD (bước 4) $\rightarrow$ Context Filter ảnh hưởng cả FIXED LOD
+\end{itemize}
+
+\noindent Đây là lý do Context Filters quan trọng --- chúng ``đẩy'' filter lên trước các phép tính LOD. Ta sẽ tìm hiểu chi tiết ở phần Filters.
+
+% -------------------------------------------------------------------
+\subsection{Quick Table Calculations --- Tính toán nhanh trên dữ liệu đã hiển thị}
+% -------------------------------------------------------------------
+
+\noindent \textbf{Quick Table Calculations} là tính năng cho phép thực hiện các phép tính phổ biến mà không cần viết công thức thủ công. Điểm khác biệt quan trọng: Quick Table Calculations tính trên \textbf{dữ liệu đã được hiển thị} trong view (sau tất cả các bước filter), không phải trên toàn bộ dataset.
+
+\noindent \textbf{Về kiến trúc:} Row-level và aggregate calculations được gửi đến data source để xử lý (qua SQL, MDX, hoặc TQL). Table calculations thì khác --- chúng được thực hiện trên \textbf{bộ nhớ cache} của Tableau, sau khi dữ liệu đã được tổng hợp và trả về. Đây là lý do chúng nằm cuối cùng trong Order of Operations.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Loại} & \textbf{Mô tả} & \textbf{Ví dụ thực tế} \\
+\midrule
+\textbf{Running Total} & Cộng dồn từ đầu đến vị trí hiện tại & Doanh thu tích lũy theo tháng \\
+\textbf{Difference} & Chênh lệch so với giá trị trước & Tháng 2 bán hơn T1: 150--100=50 \\
+\textbf{Percent Diff} & Chênh lệch \% so với kỳ trước & Tháng 3 tăng 15\% so với T2 \\
+\textbf{Percent of Total} & Phần trăm so với tổng & Q1 chiếm 28\%, Q2 chiếm 32\% \\
+\textbf{Rank} & Xếp hạng & SP A xếp hạng 1 về doanh thu \\
+\textbf{Moving Average} & Trung bình động & TB doanh thu 3 tháng gần nhất \\
+\textbf{YTD Total} & Tổng từ đầu năm đến hiện tại & Doanh thu T1 đến tháng hiện tại \\
+\textbf{YoY Growth} & So sánh cùng kỳ năm trước & Q2/2024 so với Q2/2023 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Cách tạo Quick Table Calculations:}
+
+\begin{enumerate}[nosep]
+    \item Kéo measure (ví dụ \texttt{Sales}) vào view
+    \item Click chuột phải vào pill \texttt{SUM(Sales)} trên shelf
+    \item Chọn \textbf{Quick Table Calculation} $\rightarrow$ chọn loại (ví dụ Running Total)
+    \item Pill sẽ hiện thêm ký hiệu tam giác ($\triangle$) biểu thị Table Calculation
+\end{enumerate}
+
+\noindent \textbf{Scope, Direction, và Compute Using:}
+
+\noindent Sau khi tạo Table Calculation, bạn cần xác định \textbf{phạm vi (scope)} và \textbf{hướng (direction)}:
+
+\begin{itemize}[nosep]
+    \item \textbf{Scope} (phạm vi): \textbf{Table} (toàn bộ bảng), \textbf{Pane} (từng ô lớn), \textbf{Cell} (từng ô nhỏ nhất)
+    \item \textbf{Direction} (hướng): \textbf{Across} (trái$\rightarrow$phải), \textbf{Down} (trên$\rightarrow$dưới), hoặc kết hợp
+    \item \textbf{Specific Dimension}: chỉ định dimension cụ thể --- ví dụ tính Running Total theo \texttt{Order Date}
+\end{itemize}
+
+\begin{guidelinebox}{Relative To}
+Một số Quick Table Calculations cho phép thay đổi \textbf{Relative To} --- tức là so sánh với giá trị nào. Ví dụ: Percent Difference mặc định so với \textbf{Previous} (kỳ trước), nhưng bạn có thể chuyển sang \textbf{First} (kỳ đầu tiên) để tính tăng trưởng tích lũy. Click chuột phải vào pill $\rightarrow$ \textbf{Relative To} $\rightarrow$ chọn loại.
+\end{guidelinebox}
+
+\noindent \textbf{So sánh Quick Table Calculations vs Calculated Fields:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Quick Table Calculations} & \textbf{Calculated Fields} \\
+\midrule
+\textbf{Cách tạo} & Click chuột phải, chọn menu & Viết biểu thức thủ công \\
+\textbf{Tính trên} & Dữ liệu \textbf{đã hiển thị} (cache) & Toàn bộ dataset (hoặc theo LOD) \\
+\textbf{Nơi xử lý} & Trên máy Tableau (cache) & Trên data source (SQL) \\
+\textbf{Độ linh hoạt} & Chỉ 10 loại có sẵn & Hoàn toàn linh hoạt \\
+\textbf{Hiệu năng} & Có thể chậm với data lớn & Thường nhanh hơn \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+
+
+% ===================================================================
+% SECTION III — Filters
+% ===================================================================
+\newpage
+\section{Filters --- Lọc dữ liệu để tập trung phân tích}
+\label{section:filters}
+
+\subsection{Tại sao cần Filters?}
+
+\noindent Khi làm việc với dataset có hàng chục nghìn dòng như Superstore, hiển thị tất cả dữ liệu cùng lúc sẽ tạo biểu đồ rối mắt, chậm, và khó rút ra insight. Filters giúp bạn ``cắt'' dữ liệu --- chỉ giữ lại phần quan trọng.
+
+\noindent Nhưng filters trong Tableau không đơn giản chỉ là ``ẩn dữ liệu''. Mỗi loại filter hoạt động ở \textbf{giai đoạn khác nhau} trong Order of Operations, ảnh hưởng đến hiệu năng và kết quả theo cách khác nhau.
+
+\subsection{Các loại Filters trong Tableau}
+
+\noindent Tableau có \textbf{6 loại filters chính}, xếp theo thứ tự thực hiện từ sớm đến muộn:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabularx}{\linewidth}{c l l X X}
+\toprule
+\textbf{\#} & \textbf{Loại Filter} & \textbf{Thời điểm} & \textbf{Mô tả} & \textbf{Tương đương SQL} \\
+\midrule
+1 & \textbf{Extract} & Tạo extract & Lọc ngay lúc import dữ liệu & \texttt{WHERE} lúc copy \\
+2 & \textbf{Data Source} & Trước worksheet & Lọc toàn bộ workbook & \texttt{WHERE} trên table \\
+3 & \textbf{Context} & Trước dim. filters & Tạo ``bối cảnh'' --- subset & Bảng tạm \texttt{WITH} \\
+4 & \textbf{Dimension} & Sau context & Lọc theo categories & \texttt{WHERE IN (...)} \\
+5 & \textbf{Measure} & Sau dimension & Lọc theo giá trị aggregate & \texttt{HAVING} \\
+6 & \textbf{Table Calc} & Cuối cùng & Chỉ \textbf{ẩn}, không loại bỏ & Không có tương đương \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Filters ở \textbf{vị trí sớm hơn} sẽ loại bỏ dữ liệu trước khi Tableau tính toán $\rightarrow$ hiệu năng tốt hơn.
+
+\subsection{Cách tạo Filter}
+
+\noindent Có 2 cách tạo filter phổ biến:
+
+\noindent \textbf{Cách 1 --- Kéo thả (dùng nhiều nhất):}
+
+\begin{enumerate}[nosep]
+    \item Trong \textbf{Data Pane}, kéo field vào khung \textbf{Filters} (bên trái view)
+    \item Tableau hiện hộp thoại filter: Dimension $\rightarrow$ checkbox, Measure $\rightarrow$ range
+    \item Chọn giá trị cần lọc $\rightarrow$ \textbf{OK}
+\end{enumerate}
+
+\noindent \textbf{Cách 2 --- Click chuột phải (hiện filter control):}
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào field trong \textbf{Data Pane} hoặc trên view
+    \item Chọn \textbf{Show Filter}
+    \item Filter hiện dưới dạng control (dropdown, slider, checkbox...) ở bên phải view
+\end{enumerate}
+
+\subsection{Dimension Filters --- Lọc theo phân loại}
+
+\noindent \textbf{Dimension Filters} lọc theo các giá trị phân loại --- Region, Category, Customer Name, Ship Mode... Khi kéo dimension vào Filters shelf, Tableau hiện hộp thoại với 4 tab:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Tab} & \textbf{Mô tả} & \textbf{Ví dụ} \\
+\midrule
+\textbf{General} & Chọn/bỏ giá trị cụ thể & Chọn East và West, bỏ Central và South \\
+\textbf{Wildcard} & Lọc theo mẫu text & Khách hàng tên bắt đầu bằng ``John'' \\
+\textbf{Condition} & Lọc theo điều kiện logic & Category có SUM(Sales) > 500,000 \\
+\textbf{Top} & Lọc top/bottom N theo measure & Top 10 sản phẩm theo doanh thu \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Bạn cũng có thể tạo Calculated Field làm dimension filter linh hoạt hơn:
+
+\begin{aivncodebox}[]
+\begin{python}
+// Tạo Calculated Field boolean
+[Region] = "East" OR [Region] = "West"
+\end{python}
+\end{aivncodebox}
+
+\noindent Kéo field này vào Filters $\rightarrow$ chọn \textbf{True} $\rightarrow$ kết quả tương tự.
+
+\subsection{Measure Filters --- Lọc theo giá trị số}
+
+\noindent \textbf{Measure Filters} lọc dựa trên giá trị số \textbf{đã aggregate}. Khi kéo measure vào Filters, Tableau yêu cầu chọn kiểu aggregation trước (SUM, AVG...), rồi mới chọn cách lọc.
+
+\noindent Các tùy chọn lọc measure:
+\begin{itemize}[nosep]
+    \item \textbf{Range of values}: giá trị từ X đến Y
+    \item \textbf{At least}: giá trị $\geq$ X
+    \item \textbf{At most}: giá trị $\leq$ X
+    \item \textbf{Special}: xử lý NULL values (bao gồm / loại trừ NULL)
+\end{itemize}
+
+\subsection{Context Filters --- Quan trọng nhưng hay bị hiểu sai}
+
+\noindent \textbf{Context Filter} là loại filter đặc biệt. Khi bạn đánh dấu một filter là ``Add to Context'', nó sẽ chạy \textbf{trước} tất cả dimension filters, measure filters, và FIXED LOD.
+
+\noindent \textbf{Ví dụ kinh điển --- Top 10 trong năm 2024:}
+
+\noindent Bạn muốn tìm top 10 sản phẩm có doanh thu cao nhất \textbf{trong năm 2024}. Nếu làm cách thông thường:
+
+\begin{enumerate}[nosep]
+    \item Kéo \textbf{Year([Order Date])} vào Filters $\rightarrow$ chọn 2024
+    \item Kéo \textbf{Product Name} vào Filters $\rightarrow$ tab \textbf{Top} $\rightarrow$ Top 10 by SUM(Sales)
+\end{enumerate}
+
+\noindent \textbf{Vấn đề}: Tableau tính top 10 toàn bộ rồi mới lọc năm 2024 (vì cả hai đều là dimension filters, chạy cùng bước). Kết quả sai.
+
+\noindent \textbf{Giải pháp}: Đặt Year filter làm Context Filter:
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào filter \textbf{Year} trong Filters shelf
+    \item Chọn \textbf{Add to Context}
+    \item Filter chuyển sang \textbf{màu xám đậm}
+\end{enumerate}
+
+\noindent Bây giờ Tableau lọc năm 2024 \textbf{trước} (bước 3), rồi mới tính top 10 (bước 4). Kết quả đúng.
+
+\begin{guidelinebox}{Khi nào dùng Context Filter?}
+Dùng Context Filter khi bạn cần một filter chạy \textbf{trước} các filter khác. Hai trường hợp phổ biến nhất: (1) Top N kết hợp với filter khác, (2) muốn FIXED LOD bị ảnh hưởng bởi filter.
+\end{guidelinebox}
+
+\subsection{Wildcard Filter --- Lọc theo mẫu text}
+
+\noindent Khi cần lọc theo một phần của chuỗi, dùng \textbf{Wildcard Filter}. Các tùy chọn:
+\begin{itemize}[nosep]
+    \item \textbf{Starts with}: bắt đầu bằng ``Chair...''
+    \item \textbf{Ends with}: kết thúc bằng ``...Chair''
+    \item \textbf{Contains}: chứa ``Chair'' ở bất kỳ vị trí nào
+    \item \textbf{Exactly matches}: khớp chính xác
+\end{itemize}
+
+\subsection{Hiển thị Filter Cards trên Dashboard}
+
+\noindent Sau khi tạo filter, bạn có thể hiển thị nó dưới dạng control tương tác:
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào filter pill trong Filters shelf
+    \item Chọn \textbf{Show Filter}
+    \item Thay đổi kiểu hiển thị: click chuột phải vào filter card $\rightarrow$ chọn kiểu (Single Value Dropdown, Multiple Values List, Slider...)
+\end{enumerate}
+
+\subsection{Apply to Worksheets --- Áp dụng filter cho nhiều sheet}
+
+\noindent Mặc định, mỗi filter chỉ ảnh hưởng worksheet hiện tại. Để filter áp dụng cho nhiều sheet:
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào filter pill $\rightarrow$ \textbf{Apply to Worksheets}
+    \item Chọn: \textbf{Only This Worksheet} (mặc định), \textbf{Selected Worksheets...}, \textbf{All Using This Data Source}, hoặc \textbf{All Using Related Data Sources}
+\end{enumerate}
+
+\noindent Đây là bước quan trọng khi xây dựng dashboard --- nếu quên thiết lập, người dùng chọn filter trên một chart nhưng chart khác không thay đổi theo.
+
+
+
+% ===================================================================
+% SECTION IV — Parameters
+% ===================================================================
+\newpage
+\section{Parameters --- Tạo dashboard tương tác}
+\label{section:parameters}
+
+\subsection{Parameters là gì?}
+
+\noindent \textbf{Parameters} (tham số) là giá trị động mà \textbf{người dùng nhập vào} --- có thể là một con số, một chuỗi, hay một ngày. Khác với Filters lấy dữ liệu từ dataset, Parameters hoàn toàn do người dùng kiểm soát.
+
+\noindent Nói cách khác: \textbf{Filters} trả lời ``Hiện dữ liệu nào?'', còn \textbf{Parameters} trả lời ``Hiển thị theo cách nào?''. Filters giới hạn dữ liệu, Parameters thay đổi logic phân tích.
+
+\subsection{Cách tạo Parameter}
+
+\noindent \textbf{Cách 1 --- Từ Data Pane:}
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào vùng trống trong \textbf{Data Pane} $\rightarrow$ \textbf{Create Parameter...}
+    \item Đặt tên, chọn kiểu dữ liệu, đặt giá trị mặc định
+    \item Cấu hình \textbf{Allowable values}: \textbf{All} (nhập bất kỳ), \textbf{List} (chọn từ danh sách), \textbf{Range} (khoảng min--max)
+    \item Click \textbf{OK}
+\end{enumerate}
+
+\noindent \textbf{Cách 2 --- Từ field có sẵn:} Click chuột phải vào field $\rightarrow$ \textbf{Create} $\rightarrow$ \textbf{Parameter...} Tableau tự điền danh sách giá trị.
+
+\subsection{Kiểu dữ liệu của Parameter}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Kiểu} & \textbf{Mô tả} & \textbf{Ví dụ sử dụng} \\
+\midrule
+\textbf{Integer} & Số nguyên & Số lượng Top N (5, 10, 20) \\
+\textbf{Float} & Số thập phân & Ngưỡng tỷ lệ tăng trưởng (0.05) \\
+\textbf{String} & Chuỗi văn bản & Tên region, tên measure \\
+\textbf{Boolean} & True/False & Bật/tắt reference line \\
+\textbf{Date} & Ngày & Ngày bắt đầu / kết thúc kỳ phân tích \\
+\textbf{Date \& Time} & Ngày + Giờ & Thời điểm cụ thể (ít dùng) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Dùng Parameter trong Calculated Field}
+
+\noindent Tạo parameter xong mới chỉ là bước đầu --- bạn cần \textbf{dùng nó trong Calculated Field} để tạo logic động.
+
+\subsubsection{Ví dụ 1: Thay đổi ngưỡng phân loại khách hàng}
+
+\noindent Tạo parameter \textbf{``Sales Threshold''} (Integer, mặc định 5000, Range 1000--50000, Step 1000):
+
+\begin{aivncodebox}[]
+\begin{python}
+// Calculated Field: Customer Tier (dynamic)
+IF SUM([Sales]) > [Sales Threshold] THEN "VIP"
+ELSE "Regular"
+END
+\end{python}
+\end{aivncodebox}
+
+\noindent Khi người dùng kéo slider từ 5000 lên 10000, ít khách hàng hơn sẽ được xếp vào ``VIP'' --- chart cập nhật ngay lập tức.
+
+\subsubsection{Ví dụ 2: Chọn measure hiển thị (Dynamic Measure Switching)}
+
+\noindent Tạo parameter \textbf{``Select Measure''} (String, List: ``Sales'', ``Profit'', ``Quantity''):
+
+\begin{aivncodebox}[]
+\begin{python}
+// Calculated Field: Dynamic Measure
+CASE [Select Measure]
+WHEN "Sales" THEN SUM([Sales])
+WHEN "Profit" THEN SUM([Profit])
+WHEN "Quantity" THEN SUM([Quantity])
+END
+\end{python}
+\end{aivncodebox}
+
+\noindent Kéo field ``Dynamic Measure'' vào Rows $\rightarrow$ người dùng chọn measure qua dropdown $\rightarrow$ biểu đồ tự chuyển giữa Sales, Profit, Quantity.
+
+\subsubsection{Ví dụ 3: Top N sản phẩm}
+
+\noindent Tạo parameter \textbf{``Top N''} (Integer, mặc định 10, Range 1--50):
+
+\begin{aivncodebox}[]
+\begin{python}
+// Calculated Field: Product Rank
+RANK(SUM([Sales]))
+
+// Calculated Field: Is Top N
+[Product Rank] <= [Top N]
+\end{python}
+\end{aivncodebox}
+
+\noindent Kéo ``Is Top N'' vào Filters $\rightarrow$ chọn True. Khi thay đổi parameter, danh sách tự động cập nhật.
+
+\subsection{Hiển thị Parameter Control}
+
+\begin{enumerate}[nosep]
+    \item Click chuột phải vào parameter trong Data Pane $\rightarrow$ \textbf{Show Parameter Control}
+    \item Kiểu hiển thị: \textbf{All/Range} $\rightarrow$ text box hoặc slider; \textbf{List} $\rightarrow$ dropdown hoặc radio buttons
+\end{enumerate}
+
+\subsection{Parameter vs Filter --- Khi nào dùng cái nào?}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{l X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Filter} & \textbf{Parameter} \\
+\midrule
+\textbf{Nguồn giá trị} & Lấy từ dataset (tự cập nhật) & Người dùng định nghĩa \\
+\textbf{Phạm vi} & Thường 1 worksheet & Tất cả worksheets dùng nó \\
+\textbf{Loại giá trị} & Chỉ từ dữ liệu có sẵn & Bất kỳ giá trị nào \\
+\textbf{Dùng khi} & Lọc dữ liệu (hiện/ẩn) & Thay đổi logic phân tích \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent \textbf{Kết hợp Filter + Parameter} là cách mạnh nhất --- parameter tạo logic, filter thực hiện lọc.
+
+\subsection{Parameter Actions (Tableau 2020+)}
+
+\noindent Từ phiên bản 2020, Tableau hỗ trợ \textbf{Parameter Actions} --- cho phép thay đổi parameter bằng cách \textbf{click trực tiếp vào visualization}.
+
+\noindent \textbf{Cách tạo:}
+
+\begin{enumerate}[nosep]
+    \item Menu \textbf{Worksheet} $\rightarrow$ \textbf{Actions...}
+    \item Click \textbf{Add Action} $\rightarrow$ chọn \textbf{Change Parameter}
+    \item Chọn \textbf{Source sheet}, \textbf{Target parameter}, \textbf{Source field}
+    \item Cấu hình \textbf{Clearing the selection}
+    \item OK
+\end{enumerate}
+
+% ===================================================================
+% SECTION V — Kết hợp Filters và Parameters
+% ===================================================================
+\newpage
+\section{Kết hợp Filters và Parameters --- Bài toán thực tế}
+\label{section:combined}
+
+\subsection{Dashboard phân tích doanh thu}
+
+\noindent Chúng ta sẽ áp dụng toàn bộ kiến thức đã học để xây dựng một hệ thống phân tích hoàn chỉnh.
+
+\noindent \textbf{Bước 1: Tạo Parameters}
+
+\begin{itemize}[nosep]
+    \item \textbf{Region Selector} (String, List: ``All'', ``East'', ``West'', ``Central'', ``South'', mặc định ``All'')
+    \item \textbf{Top N Products} (Integer, Range: 1--50, mặc định 10)
+\end{itemize}
+
+\noindent \textbf{Bước 2: Tạo Calculated Fields}
+
+\begin{aivncodebox}[]
+\begin{python}
+// 1. Filter động theo Region (dùng parameter)
+[Region Selector] = "All" OR [Region] = [Region Selector]
+
+// 2. Profit Margin
+ZN(SUM([Profit])) / ZN(SUM([Sales]))
+
+// 3. Customer Classification
+IF SUM([Sales]) > 10000 THEN "VIP"
+ELSEIF SUM([Sales]) > 5000 THEN "Regular"
+ELSE "New"
+END
+\end{python}
+\end{aivncodebox}
+
+\noindent \textbf{Bước 3: Thiết lập Filters}
+
+\begin{itemize}[nosep]
+    \item Kéo ``Region Filter'' (boolean) vào Filters $\rightarrow$ chọn \textbf{True}
+    \item Kéo \textbf{Category} vào Filters $\rightarrow$ Show Filter
+    \item Tạo Top N filter: kéo Product Name vào Filters $\rightarrow$ tab \textbf{Top} $\rightarrow$ Top N by SUM(Sales) $\rightarrow$ chọn parameter \textbf{Top N Products}
+\end{itemize}
+
+\noindent \textbf{Bước 4}: Show Parameter Controls cho cả hai parameters.
+
+\noindent \textbf{Bước 5: Tạo Worksheets}
+
+\begin{itemize}[nosep]
+    \item \textbf{Sheet 1 --- KPI Cards}: Tổng Sales, Profit, Margin (dùng BAN --- Big Ass Numbers)
+    \item \textbf{Sheet 2 --- Bar Chart}: Top N Products theo doanh thu
+    \item \textbf{Sheet 3 --- Line Chart}: Xu hướng doanh thu theo tháng
+\end{itemize}
+
+\subsection{Thứ tự áp dụng Filters --- Recap}
+
+\begin{aivncodebox}[]
+\begin{python}
+Data Source Filters (nếu có)
+    → Context Filters (nếu có)
+    → Region Filter (Dimension Filter, dùng parameter)
+    → Category Filter (Dimension Filter)
+    → Top N Filter (Dimension Filter)
+    → Measure Filters (nếu có)
+    → Table Calculations (Running Total, Rank...)
+\end{python}
+\end{aivncodebox}
+
+\begin{guidelinebox}{Tối ưu hiệu năng dashboard}
+\begin{itemize}[nosep]
+    \item Dùng \textbf{Context Filter} cho filter loại bỏ phần lớn dữ liệu (như Year = 2024) --- giúp các filter sau chạy nhanh hơn
+    \item Hạn chế dùng \textbf{Measure Filters} vì chúng chạy muộn nhất --- thay bằng Calculated Field + Dimension Filter khi có thể
+    \item Tránh quá nhiều filters trên một worksheet
+\end{itemize}
+\end{guidelinebox}
+
+% ===================================================================
+% SECTION VI — Tóm tắt buổi học
+% ===================================================================
+\newpage
+\section{Tóm tắt buổi học}
+\label{section:summary}
+
+\noindent Trong buổi học này, chúng ta đã trang bị 3 công cụ cốt lõi:
+
+\begin{conceptbox}{Calculated Fields}
+\begin{itemize}[nosep]
+    \item Tạo chỉ số mới: Profit Margin, Customer Tier, Delivery Days
+    \item Phân biệt row-level (từng dòng) và aggregate (nhóm dòng)
+    \item LOD Expressions (FIXED, INCLUDE, EXCLUDE) --- tính ở mức chi tiết bất kỳ
+    \item Order of Operations --- thứ tự 9 bước Tableau xử lý dữ liệu
+    \item Quick Table Calculations --- Running Total, Rank, Percent of Total
+\end{itemize}
+\end{conceptbox}
+
+\begin{conceptbox}{Filters}
+\begin{itemize}[nosep]
+    \item 6 loại filters từ Extract đến Table Calc, mỗi loại ở giai đoạn khác nhau
+    \item Context Filter --- ``đẩy'' filter lên trước FIXED LOD và Top N
+    \item Dimension Filters (General, Wildcard, Condition, Top) cho categories
+    \item Measure Filters cho giá trị số aggregate
+\end{itemize}
+\end{conceptbox}
+
+\begin{conceptbox}{Parameters}
+\begin{itemize}[nosep]
+    \item Giá trị động do người dùng nhập --- không lấy từ dataset
+    \item Kết hợp với Calculated Fields: ngưỡng động, measure switching, Top N
+    \item Parameter Actions (2020+) --- click vào chart để thay đổi parameter
+    \item Một parameter ảnh hưởng tất cả worksheets dùng nó
+\end{itemize}
+\end{conceptbox}
+
+% ===================================================================
+% SECTION VII — Bài tập thực hành
+% ===================================================================
+\newpage
+\section{Bài tập thực hành}
+\label{section:exercise}
+
+\subsection{Bài tập: Sales Analysis Dashboard}
+
+\noindent \textbf{Dữ liệu:} Dataset Superstore (có sẵn trong Tableau Desktop)
+
+\noindent \textbf{Yêu cầu:}
+
+\begin{enumerate}
+    \item \textbf{Tạo Calculated Fields:}
+    \begin{itemize}[nosep]
+        \item \textbf{Profit Margin}: \texttt{ZN(SUM([Profit])) / ZN(SUM([Sales]))}
+        \item \textbf{Customer Tier}: phân loại VIP / Regular / New dựa trên tổng Sales (dùng parameter cho ngưỡng)
+        \item \textbf{Delivery Days}: \texttt{DATEDIFF('day', [Order Date], [Ship Date])}
+        \item \textbf{Customer Total Sales} (LOD): \texttt{\{ FIXED [Customer Name] : SUM([Sales]) \}}
+    \end{itemize}
+
+    \item \textbf{Tạo Parameters:}
+    \begin{itemize}[nosep]
+        \item \textbf{VIP Threshold} (Integer, mặc định 5000, Range 1000--50000)
+        \item \textbf{Top N} (Integer, mặc định 10, Range 1--50)
+    \end{itemize}
+
+    \item \textbf{Tạo Worksheets + Filters:}
+    \begin{itemize}[nosep]
+        \item \textbf{Bar Chart}: Top N sản phẩm theo doanh thu
+        \item \textbf{Scatter Plot}: Profit Margin vs Customer Total Sales
+        \item \textbf{Text Table}: Danh sách khách hàng + Customer Tier + Delivery Days TB
+        \item Thêm \textbf{Year filter} làm \textbf{Context Filter}
+        \item Thêm \textbf{Category filter} hiển thị checkbox
+    \end{itemize}
+
+    \item \textbf{Show Parameter Controls} cho VIP Threshold và Top N
+\end{enumerate}
+
+\noindent \textbf{Hướng dẫn:}
+\begin{itemize}[nosep]
+    \item Tạo Calculated Fields trước, kiểm tra từng field bằng cách kéo vào view
+    \item Nhớ format Profit Margin thành Percentage
+    \item Kiểm tra Top N có đúng khi thay đổi parameter không
+    \item Thử thay đổi VIP Threshold và quan sát Customer Tier thay đổi
+\end{itemize}
+
+% ===================================================================
+% SECTION VIII — Tài liệu tham khảo
+% ===================================================================
+\newpage
+\section{Tài liệu tham khảo}
+\label{section:references}
+\nocite{*}
+\vspace{-3.2em}
+\printbibliography
+
+% ===================================================================
+% Phụ lục
+% ===================================================================
+\newpage
+\begin{appendices}
+
+\section{Nội dung Phụ lục}
+
+\begin{enumerate}
+    \item \textbf{Datasets:} Các file dataset được đề cập trong bài có thể được tải tại \href{https://aivietnam.edu.vn/}{đây}.
+    \item \textbf{Hint:} Các file code gợi ý có thể được tải tại \href{https://aivietnam.edu.vn/}{đây}.
+    \item \textbf{Solution:} Lời giải chi tiết có thể được tải tại \href{https://aivietnam.edu.vn/}{đây}.
+    \item \textbf{Rubric:}
+
+\begin{longtable}{|c|p{7.5cm}|p{7cm}|}
+    \hline
+    \textbf{Mục} & \textbf{Kiến Thức} & \textbf{Đánh Giá} \\\hline
+    I. &
+    - Kiến thức về Calculated Fields \newline
+    - Kiến thức về LOD Expressions \newline
+    - Kiến thức về Order of Operations
+    &
+    - Nắm được row-level vs aggregate \newline
+    - Có khả năng tạo chỉ số kinh doanh \newline
+    - Hiểu thứ tự xử lý của Tableau
+    \\\hline
+    II. &
+    - Kiến thức về Filters \newline
+    - Kiến thức về Context Filters
+    &
+    - Nắm được 6 loại filters \newline
+    - Biết khi nào dùng Context Filter
+    \\\hline
+    III. &
+    - Kiến thức về Parameters \newline
+    - Kết hợp Parameters + Filters
+    &
+    - Tạo được dashboard tương tác \newline
+    - Biết kết hợp 3 công cụ
+    \\\hline
+\end{longtable}
+\end{enumerate}
+
+\end{appendices}
+
+\end{document}

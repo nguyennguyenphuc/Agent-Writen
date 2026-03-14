@@ -1,0 +1,380 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{vietnam}
+\usepackage[vietnamese=nohyphenation]{hyphsubst}
+\usepackage[vietnamese]{babel}
+\AtBeginDocument{\shorthandoff{"}}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{booktabs}
+\usepackage{ragged2e}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{multicol}
+\usepackage[inline,shortlabels]{enumitem}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{fontawesome5}
+\usepackage{pifont}
+
+% === Custom boxes ===
+\newtcolorbox{notebox}[1][]{
+    enhanced, colback=blue!5!white, colframe=blue!60!black,
+    boxrule=1pt, arc=4pt, fonttitle=\bfseries,
+    attach boxed title to top left={yshift=-2mm, xshift=3mm},
+    colbacktitle=blue!60!black, coltitle=white,
+    title=\faInfoCircle\hspace{1mm} Lưu ý, #1
+}
+
+\newtcolorbox{guidelinebox}[1][]{
+    enhanced, colback=yellow!10!white, colframe=orange!90!black,
+    boxrule=1pt, arc=4pt, fonttitle=\bfseries,
+    attach boxed title to top left={yshift=-2mm, xshift=3mm},
+    colbacktitle=orange!90!black, coltitle=white,
+    title=\faLightbulb\hspace{1mm} Giải thích chi tiết, #1
+}
+
+% === Choices environment (from AIO2025 template) ===
+\newcounter{choice}
+\renewcommand\thechoice{($\alph{choice}$)}
+\newcommand\choicelabel{\thechoice}
+
+\newenvironment{choices}%
+  {\list{\choicelabel}%
+     {\usecounter{choice}\def\makelabel##1{\hss\llap{##1}}%
+       \settowidth{\leftmargin}{W.\hskip\labelsep\hskip 0 em}%
+       \def\choice{%
+         \item
+       } % choice
+       \labelwidth\leftmargin\advance\labelwidth-\labelsep
+       \topsep=0pt
+       \partopsep=0pt
+     }%
+  }%
+  {\endlist}
+
+% === Listings style for Tableau formulas ===
+\lstdefinestyle{tableau}{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!8},
+    rulecolor=\color{gray!40},
+    xleftmargin=4pt,
+    xrightmargin=4pt,
+    aboveskip=6pt,
+    belowskip=6pt,
+    showstringspaces=false,
+    literate={<=}{{\(\leq\)}}2
+}
+
+% === Geometry ===
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+% === Title ===
+\title{
+  \begin{center}
+    \Large {AI VIET NAM COURSE 2025}\\[.5ex]
+    \Huge \textbf{Tableau: Basic Charts \& Preprocessing Functions}\\[.5ex]
+    \large Quiz Solution
+  \end{center}
+}
+\author{Anh Nguyên}
+\date{}
+
+% === DOCUMENT ===
+\begin{document}
+\maketitle
+
+\begin{enumerate}[label=\textbf{Câu \arabic*.}, leftmargin=*, labelsep=1em, itemsep=2em]
+
+%% ========================================
+%% CÂU 1 — ĐỀ + SOLUTION
+%% ========================================
+
+\item \textit{(Preprocessing Functions --- String Functions)}
+
+Trong dataset Superstore, cột \texttt{Order ID} có cấu trúc cố định: \texttt{"[Mã khu vực 2 ký tự]-[Năm đặt hàng 4 ký tự]-[Mã đơn hàng 6 ký tự]"}. Ví dụ: \texttt{"CA-2021-152156"}, \texttt{"US-2022-108966"}.
+
+Bạn cần tạo 3 Calculated Fields trong Tableau:
+\begin{itemize}
+    \item \textbf{Field 1:} Trích xuất mã khu vực (2 ký tự đầu) --- ví dụ \texttt{"CA"}
+    \item \textbf{Field 2:} Trích xuất năm đặt hàng (4 ký tự ở giữa) --- ví dụ \texttt{"2021"}
+    \item \textbf{Field 3:} Kiểm tra đơn hàng có phải khu vực "US" không --- ví dụ \texttt{True} hoặc \texttt{False}
+\end{itemize}
+
+\begin{notebox}
+Trong Tableau, hàm \texttt{MID(string, start, length)} sử dụng chỉ mục \textbf{1-indexed} --- ký tự đầu tiên ở vị trí 1.
+\end{notebox}
+
+\textbf{Câu hỏi:} Bộ Calculated Fields nào sau đây cho kết quả \textbf{đúng} cho cả 3 yêu cầu trên?
+
+\begin{choices}
+    \choice
+    \begin{lstlisting}[style=tableau]
+Field 1: LEFT([Order ID], 2)
+Field 2: MID([Order ID], 3, 4)
+Field 3: STARTSWITH([Order ID], "US")
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+Field 1: SPLIT([Order ID], "-", 1)
+Field 2: MID([Order ID], 4, 4)
+Field 3: CONTAINS([Order ID], "US")
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+Field 1: SPLIT([Order ID], "-", 1)
+Field 2: SPLIT([Order ID], "-", 2)
+Field 3: STARTSWITH([Order ID], "US")
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+Field 1: SPLIT([Order ID], "-", 2)
+Field 2: SPLIT([Order ID], "-", 3)
+Field 3: STARTSWITH([Order ID], "US")
+    \end{lstlisting}
+\end{choices}
+
+\textbf{Đáp án: (c)}
+
+\begin{guidelinebox}
+
+\textbf{Cấu trúc Order ID:} \texttt{"CA-2021-152156"} $\rightarrow$ ký tự theo vị trí (1-indexed):
+\begin{itemize}
+    \item Vị trí 1--2: \texttt{"CA"} (mã khu vực)
+    \item Vị trí 3: \texttt{"-"} (dấu gạch)
+    \item Vị trí 4--7: \texttt{"2021"} (năm đặt hàng)
+    \item Vị trí 8: \texttt{"-"} (dấu gạch)
+    \item Vị trí 9--14: \texttt{"152156"} (mã đơn hàng)
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{Choice (a) sai:}
+    \begin{itemize}
+        \item Field 1: \texttt{LEFT([Order ID], 2)} $\rightarrow$ \texttt{"CA"} \checkmark
+        \item Field 2: \texttt{MID([Order ID], 3, 4)} $\rightarrow$ Bắt đầu tại vị trí 3 (ký tự \texttt{"-"}), lấy 4 ký tự $\rightarrow$ \texttt{"-202"} \ding{55} (lấy phải dấu gạch + 3 ký tự đầu của năm)
+        \item Field 3: \texttt{STARTSWITH([Order ID], "US")} $\rightarrow$ \checkmark
+    \end{itemize}
+    $\rightarrow$ \textbf{Field 2 sai} vì start position bị lệch 1 đơn vị.
+
+    \item \textbf{Choice (b) sai:}
+    \begin{itemize}
+        \item Field 1: \texttt{SPLIT([Order ID], "-", 1)} $\rightarrow$ \texttt{"CA"} \checkmark
+        \item Field 2: \texttt{MID([Order ID], 4, 4)} $\rightarrow$ \texttt{"2021"} \checkmark
+        \item Field 3: \texttt{CONTAINS([Order ID], "US")} $\rightarrow$ \textbf{Có vấn đề!} \texttt{CONTAINS} kiểm tra chuỗi con ở \textbf{bất kỳ vị trí nào}. Nếu mã đơn hàng chứa \texttt{"US"} ở phần khác (ví dụ: \texttt{"CA-2021-1US966"}), \texttt{CONTAINS} trả về \texttt{True} sai.
+    \end{itemize}
+    $\rightarrow$ \textbf{Field 3 không chính xác}. Dù xác suất trùng thấp, \texttt{STARTSWITH} luôn là best practice khi chỉ cần check prefix.
+
+    \item \textbf{Choice (c) đúng:}
+    \begin{itemize}
+        \item Field 1: \texttt{SPLIT([Order ID], "-", 1)} $\rightarrow$ \texttt{"CA"} \checkmark
+        \item Field 2: \texttt{SPLIT([Order ID], "-", 2)} $\rightarrow$ \texttt{"2021"} \checkmark
+        \item Field 3: \texttt{STARTSWITH([Order ID], "US")} $\rightarrow$ \checkmark
+    \end{itemize}
+    $\rightarrow$ \textbf{Tất cả 3 field đều đúng}, và \texttt{SPLIT} không phụ thuộc vị trí ký tự cố định.
+
+    \item \textbf{Choice (d) sai:}
+    \begin{itemize}
+        \item Field 1: \texttt{SPLIT([Order ID], "-", 2)} $\rightarrow$ \texttt{"2021"} \ding{55} (đây là năm, không phải mã khu vực)
+        \item Field 2: \texttt{SPLIT([Order ID], "-", 3)} $\rightarrow$ \texttt{"152156"} \ding{55} (đây là mã đơn hàng, không phải năm)
+    \end{itemize}
+    $\rightarrow$ \textbf{Field 1 và Field 2 đều sai} vì token\_number bị lệch.
+\end{itemize}
+
+\end{guidelinebox}
+
+\newpage
+
+%% ========================================
+%% CÂU 2 — ĐỀ + SOLUTION
+%% ========================================
+
+\item \textit{(Preprocessing Functions --- Date Functions \& NULL Handling)}
+
+Tiếp tục với dataset Superstore, bạn cần tạo một Calculated Field \texttt{[Delivery Speed]} để phân loại tốc độ giao hàng dựa trên khoảng cách giữa \texttt{Order Date} và \texttt{Ship Date}. Quy tắc phân loại:
+\begin{itemize}
+    \item \textbf{"Fast"} nếu giao trong vòng 2 ngày ($\leq$ 2 ngày)
+    \item \textbf{"Normal"} nếu giao trong 3--5 ngày
+    \item \textbf{"Slow"} nếu giao trên 5 ngày
+\end{itemize}
+
+Ngoài ra, một số đơn hàng chưa có \texttt{Ship Date} (giá trị NULL). Với những đơn hàng này, \texttt{[Delivery Speed]} cần trả về \texttt{"Pending"} thay vì NULL.
+
+\begin{notebox}
+Trong Tableau, bất kỳ phép tính nào có NULL đều trả về NULL --- ví dụ \texttt{DATEDIFF('day', [Order Date], NULL)} = NULL, và \texttt{NULL <= 2} = NULL (không phải True hay False).
+\end{notebox}
+
+\textit{(Calculated Field \texttt{[Delivery Speed]} này sẽ được sử dụng trong Câu 3.)}
+
+\textbf{Câu hỏi:} Công thức Calculated Field nào sau đây cho kết quả \textbf{đúng} trong mọi trường hợp?
+
+\begin{choices}
+    \choice
+    \begin{lstlisting}[style=tableau]
+IF DATEDIFF('day', [Order Date], [Ship Date]) <= 2 THEN "Fast"
+ELSEIF DATEDIFF('day', [Order Date], [Ship Date]) <= 5 THEN "Normal"
+ELSE "Slow"
+END
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+IF ISNULL([Ship Date]) THEN "Pending"
+ELSEIF DATEDIFF('day', [Order Date], [Ship Date]) <= 2 THEN "Fast"
+ELSEIF DATEDIFF('day', [Order Date], [Ship Date]) <= 5 THEN "Normal"
+ELSE "Slow"
+END
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+IF ZN(DATEDIFF('day', [Order Date], [Ship Date])) <= 2 THEN "Fast"
+ELSEIF ZN(DATEDIFF('day', [Order Date], [Ship Date])) <= 5 THEN "Normal"
+ELSEIF ISNULL([Ship Date]) THEN "Pending"
+ELSE "Slow"
+END
+    \end{lstlisting}
+
+    \choice
+    \begin{lstlisting}[style=tableau]
+IF DATEDIFF('day', [Order Date], [Ship Date]) <= 2 THEN "Fast"
+ELSEIF DATEDIFF('day', [Order Date], [Ship Date]) <= 5 THEN "Normal"
+ELSEIF ISNULL([Ship Date]) THEN "Pending"
+ELSE "Slow"
+END
+    \end{lstlisting}
+\end{choices}
+
+\textbf{Đáp án: (b)}
+
+\begin{guidelinebox}
+
+\begin{itemize}
+    \item \textbf{Choice (a) sai:} Công thức này \textbf{không xử lý trường hợp Ship Date = NULL}. Khi Ship Date là NULL, \texttt{DATEDIFF} trả về NULL. Trong Tableau, \texttt{NULL <= 2} trả về NULL (falsy), nên mọi điều kiện IF/ELSEIF đều không khớp $\rightarrow$ rơi vào ELSE $\rightarrow$ trả về \texttt{"Slow"}. Đơn hàng chưa giao bị phân loại sai.
+
+    \item \textbf{Choice (b) đúng:} Kiểm tra NULL \textbf{trước tiên} bằng \texttt{ISNULL([Ship Date])}. Nếu NULL $\rightarrow$ trả về \texttt{"Pending"} ngay, không tính DATEDIFF. Nếu Ship Date có giá trị $\rightarrow$ tiếp tục phân loại Fast/Normal/Slow. Thứ tự kiểm tra NULL trước là quan trọng vì IF/ELSEIF đánh giá \textbf{lần lượt từ trên xuống}.
+
+    \item \textbf{Choice (c) sai:} Hai vấn đề:
+    \begin{enumerate}[1.]
+        \item \texttt{ZN(DATEDIFF(...))} khi Ship Date = NULL $\rightarrow$ DATEDIFF = NULL $\rightarrow$ ZN thay bằng 0 $\rightarrow$ \texttt{0 <= 2} = True $\rightarrow$ trả về \texttt{"Fast"}. Đơn hàng chưa giao bị phân loại sai thành \texttt{"Fast"}!
+        \item \texttt{ISNULL} đặt \textbf{sau} 2 điều kiện DATEDIFF $\rightarrow$ không bao giờ được thực thi.
+    \end{enumerate}
+
+    \item \textbf{Choice (d) sai:} Khi Ship Date = NULL: \texttt{DATEDIFF} = NULL $\rightarrow$ \texttt{NULL <= 2} = NULL (falsy) $\rightarrow$ \texttt{NULL <= 5} = NULL (falsy) $\rightarrow$ rơi thẳng vào \textbf{ELSE} $\rightarrow$ \texttt{"Slow"}, bỏ qua \texttt{ISNULL}. Thứ tự sai --- ISNULL phải đứng \textbf{đầu tiên}.
+\end{itemize}
+
+\end{guidelinebox}
+
+\newpage
+
+%% ========================================
+%% CÂU 3 — ĐỀ + SOLUTION
+%% ========================================
+
+\item \textit{(Basic Charts --- Stacked Area Chart)}
+
+Sử dụng Calculated Field \texttt{[Delivery Speed]} \textbf{đã tạo ở Câu 2} (giả sử bạn đã chọn công thức đúng), bạn muốn xem xu hướng doanh thu theo tốc độ giao hàng qua thời gian. Bạn filter bỏ các đơn hàng \texttt{"Pending"} và thực hiện các bước sau:
+
+\begin{enumerate}
+    \item Kéo \texttt{Order Date} vào \textbf{Columns shelf}, nhấp chuột phải $\rightarrow$ chọn \textbf{Month} (Continuous --- nhóm dưới, pill xanh lá)
+    \item Kéo \texttt{Sales} vào \textbf{Rows shelf}
+    \item Trong Marks card, chuyển \textbf{Mark Type} từ "Automatic" (đang là Line) sang \textbf{Area}
+    \item Kéo \texttt{[Delivery Speed]} vào ô \textbf{Color} trong Marks card
+\end{enumerate}
+
+Biểu đồ hiện tại là \textbf{Stacked Area Chart} với 3 vùng màu (Fast, Normal, Slow) xếp chồng lên nhau. Tại một tháng cụ thể, bạn nhìn vào \textbf{trục Y} và thấy \textbf{đường biên trên cùng} (top edge) của toàn bộ biểu đồ chạm khoảng \textbf{\$120,000}.
+
+\textbf{Câu hỏi:} Phát biểu nào mô tả \textbf{đúng nhất} cách đọc biểu đồ Stacked Area này?
+
+\begin{choices}
+    \choice Mỗi vùng màu hoạt động \textbf{độc lập} --- đường biên trên (top edge) của mỗi vùng là giá trị \texttt{SUM(Sales)} riêng của nhóm Delivery Speed đó. Ba đường biên trên tương đương 3 đường trong Line Chart. Giá trị \$120,000 là doanh thu riêng của nhóm nằm trên cùng.
+
+    \choice Các vùng \textbf{xếp chồng} lên nhau --- đường biên trên cùng (\$120,000) là \textbf{tổng doanh thu cả 3 nhóm Delivery Speed cộng lại} tại tháng đó. \textbf{Chiều cao} (thickness) của từng vùng màu mới thể hiện \texttt{SUM(Sales)} riêng của nhóm đó. Vùng trên cùng bị "đẩy lên" bởi các vùng bên dưới, nên đường biên trên của nó \textbf{không phải} giá trị riêng.
+
+    \choice Stacked Area Chart mặc định hiển thị \textbf{tỷ lệ phần trăm} --- mỗi vùng thể hiện \% đóng góp của nhóm Delivery Speed, tổng 3 vùng luôn = 100\%. Giá trị \$120,000 trên tooltip là tổng tuyệt đối, nhưng trục Y hiển thị 0--100\%.
+
+    \choice Stacked Area Chart tự động sắp xếp các nhóm Delivery Speed sao cho nhóm có doanh thu lớn nhất luôn nằm ở \textbf{vùng dưới cùng}. Nếu thứ tự doanh thu thay đổi qua từng tháng, thứ tự các vùng cũng thay đổi theo để luôn giữ nhóm lớn nhất ở dưới.
+\end{choices}
+
+\textbf{Đáp án: (b)}
+
+\begin{guidelinebox}
+
+\begin{itemize}
+    \item \textbf{Choice (a) sai:} Trong Stacked Area Chart, các vùng \textbf{không} hoạt động độc lập. Chúng xếp chồng --- vùng thứ 2 bắt đầu từ đường biên trên của vùng thứ 1, vùng thứ 3 từ đường biên trên vùng thứ 2. Đường biên trên mỗi vùng phía trên là \textbf{tổng cộng dồn}, không phải giá trị riêng. Chỉ \textbf{chiều cao} (thickness) mỗi vùng mới phản ánh đúng \texttt{SUM(Sales)} riêng. Muốn 3 đường độc lập $\rightarrow$ dùng \textbf{Line Chart}.
+
+    \item \textbf{Choice (b) đúng:} Cách đọc chính xác. Khi kéo \texttt{[Delivery Speed]} vào Color với Mark Type = Area, Tableau tạo biểu đồ xếp chồng: Fast bắt đầu từ y=0, Normal xếp \textbf{trên} Fast, Slow xếp \textbf{trên cùng}. Nhìn trên trục Y, đường biên trên cùng chạm \$120,000 = tổng \texttt{SUM(Sales)} cả 3 nhóm. Đây là "cạm bẫy" phổ biến nhất: người xem dễ nhầm đường biên trên cùng là doanh thu riêng của nhóm trên cùng.
+
+    \item \textbf{Choice (c) sai:} Stacked Area Chart mặc định hiển thị giá trị \textbf{tuyệt đối} (\texttt{SUM(Sales)} bằng đô-la), \textbf{không phải} phần trăm. Trục Y hiển thị giá trị \$ thực tế. Để có dạng \% (tổng = 100\%), cần thêm bước: chuột phải vào \texttt{SUM(Sales)} $\rightarrow$ \textbf{Quick Table Calculation} $\rightarrow$ \textbf{Percent of Total}.
+
+    \item \textbf{Choice (d) sai:} Thứ tự nhóm trong Stacked Area Chart được \textbf{cố định} theo legend --- Tableau \textbf{không} tự động xếp lại thứ tự các vùng dựa trên giá trị doanh thu. Thứ tự \textbf{giữ nguyên xuyên suốt} toàn bộ trục thời gian. Muốn thay đổi $\rightarrow$ kéo thủ công trong legend.
+\end{itemize}
+
+\end{guidelinebox}
+
+\newpage
+
+%% ========================================
+%% CÂU 4 — ĐỀ + SOLUTION
+%% ========================================
+
+\item \textit{(Basic Charts --- Discrete vs Continuous Date)}
+
+Sau khi phân tích tốc độ giao hàng ở Câu 3, bạn muốn xem xu hướng doanh thu theo thời gian bằng \textbf{Line Chart}. Bạn kéo \texttt{Order Date} vào Columns shelf và \texttt{Sales} vào Rows shelf, sau đó nhấp chuột phải vào pill \texttt{Order Date} trên Columns shelf.
+
+Menu hiện ra với 2 nhóm tùy chọn (phân cách bởi đường kẻ ngang):
+\begin{itemize}
+    \item \textbf{Nhóm trên} (Discrete --- pill màu xanh dương): Year, Quarter, Month, Day...
+    \item \textbf{Nhóm dưới} (Continuous --- pill màu xanh lá): Year, Quarter, Month, Day...
+\end{itemize}
+
+Bạn chọn \texttt{Month} từ \textbf{nhóm trên (Discrete)}. Line Chart hiển thị 12 header: January, February, ..., December. Dữ liệu Superstore có 4 năm (2021--2024).
+
+\textbf{Câu hỏi:} Phát biểu nào mô tả \textbf{đúng nhất} hành vi của biểu đồ khi chọn \texttt{Month} Discrete (nhóm trên)?
+
+\begin{choices}
+    \choice Tableau tạo trục thời gian liên tục từ January 2021 đến December 2024, đường kẻ nối liền mạch qua 48 tháng. Chọn Discrete hay Continuous không ảnh hưởng đến cách hiển thị Line Chart.
+
+    \choice Tableau tạo 12 header riêng biệt (January $\rightarrow$ December). Dữ liệu của \textbf{cùng tháng từ tất cả các năm} được gộp lại --- ví dụ header "March" chứa tổng \texttt{SUM(Sales)} của March 2021 + March 2022 + March 2023 + March 2024. Đường kẻ nối 12 điểm này cho thấy xu hướng theo mùa (seasonality) nhưng \textbf{không thể thấy xu hướng tăng trưởng qua các năm}.
+
+    \choice Tableau tạo 48 header riêng biệt --- 12 tháng $\times$ 4 năm. Đường kẻ bị \textbf{đứt} tại mỗi ranh giới năm (December $\rightarrow$ January năm sau) vì Discrete Date không nối giữa các năm.
+
+    \choice Tableau tạo 12 header riêng biệt (January $\rightarrow$ December) nhưng vẽ \textbf{4 đường riêng biệt}, mỗi đường cho một năm (2021, 2022, 2023, 2024), tự động phân biệt bằng màu.
+\end{choices}
+
+\textbf{Đáp án: (b)}
+
+\begin{guidelinebox}
+
+\begin{itemize}
+    \item \textbf{Choice (a) sai:} Discrete và Continuous tạo ra kết quả \textbf{rất khác nhau}. Discrete Date (pill xanh dương) tạo header riêng biệt, Continuous Date (pill xanh lá) tạo trục liên tục. Nói "không ảnh hưởng" là hoàn toàn sai.
+
+    \item \textbf{Choice (b) đúng:} Khi chọn \texttt{Month} Discrete, Tableau tạo 12 header: January $\rightarrow$ December. Dữ liệu của cùng tháng từ mọi năm được \textbf{gộp lại} --- ví dụ "March" chứa \texttt{SUM(Sales)} của March 2021 + 2022 + 2023 + 2024. Biểu đồ cho thấy xu hướng theo mùa nhưng mất thông tin tăng trưởng qua các năm. Muốn thấy xu hướng qua các năm $\rightarrow$ chọn \texttt{Month} Continuous (pill xanh lá).
+
+    \item \textbf{Choice (c) sai:} Discrete \texttt{Month} \textbf{không} tạo 48 header. Chỉ tạo 12 header (January $\rightarrow$ December) và gộp dữ liệu. Để tạo header theo năm-tháng, cần thêm \texttt{YEAR} Discrete vào Columns shelf.
+
+    \item \textbf{Choice (d) sai:} Discrete \texttt{Month} tự nó \textbf{không} tách 4 đường theo năm. Cần kéo thêm \texttt{YEAR(Order Date)} vào Color. Với chỉ \texttt{Month} Discrete trên Columns, Tableau gộp tất cả năm vào 12 điểm duy nhất.
+\end{itemize}
+
+\end{guidelinebox}
+
+\end{enumerate}
+
+\vspace{2em}
+\begin{center}
+--- \textit{Hết Solution} ---
+\end{center}
+
+\end{document}

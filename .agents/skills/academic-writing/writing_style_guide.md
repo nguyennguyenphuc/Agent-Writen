@@ -302,3 +302,126 @@ Trước khi nộp bài, đọc lại và tự hỏi:
 - **"Có bước nào bị bỏ qua vì tôi cho là 'sinh viên tự hiểu'?"** — Đừng assume, giải thích hết.
 - **"Ví dụ có đủ context để chạy không?"** — Phải có data, setup, expected output.
 
+---
+
+## 10. Hành văn tự nhiên — Tránh dấu hiệu AI
+
+Mục này đặc biệt quan trọng để bài viết không bị "giống AI". Người đọc sẽ cảm thấy tự nhiên hơn khi viết đúng phong cách người Việt.
+
+### 10a. Giới hạn sử dụng `---` (horizontal rule)
+
+**Vấn đề:** Dùng quá nhiều `---` là dấu hiệu rõ ràng của AI. Người Việt viết tutorial hiếm khi dùng `---` nhiều.
+
+**QUY TẮC:**
+- Tối đa **2-3** `---` trong toàn bài (chỉ dùng giữa các phần lớn)
+- **KHÔNG** dùng `---` giữa các subsection
+- Thay bằng: câu nối tự nhiên, hoặc để trống 1 dòng
+
+**Ví dụ:**
+```
+❌ ## I. Giới thiệu
+
+Nội dung...
+
+---
+
+## II. Kiến thức nền
+
+Nội dung...
+
+---
+
+## III. Thực hành
+
+Nội dung...
+```
+
+✅ **Cách viết tự nhiên hơn:**
+```
+## I. Giới thiệu
+
+Nội dung...
+
+## II. Kiến thức nền
+
+Nội dung...
+
+## III. Thực hành
+
+Nội dung...
+```
+
+### 10b. Câu ngắn, dễ đọc
+
+**Vấn đề:** Câu quá dài (25+ tỷ) là đặc điểm của văn bản AI. Người Việt thường viết câu ngắn, mạch lạc.
+
+**QUY TẮC:**
+- Tránh câu quá **25 từ**
+- Chia nhỏ câu phức tạp thành câu đơn giản
+- Dùng dấu chấm (.) nhiều hơn dấu phẩy (,)
+
+**Ví dụ:**
+```
+❌ "Trong khi đó, một nguyên tắc quan trọng cần nhớ là chỉ nên sử dụng Line Chart khi trục X là thời gian hoặc một dãy số có thứ tự liên tục, bởi vì đường kẻ nối các điểm dữ liệu liên tiếp tạo ra một dòng chảy trực quan giúp người xem nhận ra xu hướng nhanh hơn so với việc nhìn vào các cột rời rạc"
+
+✅ "Lưu ý quan trọng: chỉ dùng Line Chart khi trục X là thời gian. Đường nối giữa các điểm tạo 'dòng chảy' trực quan, giúp người xem nhận ra xu hướng nhanh hơn."
+```
+
+### 10c. Tránh cụm từ máy móc
+
+**Vấn đề:** Một số cụm từ rất "AI" — người Việt hiếm khi dùng khi viết tự nhiên.
+
+**DANH SÁCH CỤM CẦN TRÁNH:**
+
+| ❌ Tránh | ✅ Thay bằng |
+|:---------|:-------------|
+| "theo như" | "theo" |
+| "căn cứ vào" | "dựa vào" |
+| "dựa trên" | "dựa" |
+| "để thực hiện" | "để" |
+| "trong bối cảnh" | "trong" |
+| "một cách" | (bỏ) |
+| "về mặt" | (bỏ) |
+| "cần phải" | "cần" |
+| "được sử dụng" | "dùng" |
+| "được thực hiện" | "thực hiện" |
+| "hướng đến" | "về" |
+| "tiếp theo chúng ta sẽ" | "giờ ta sẽ" |
+
+**Ví dụ:**
+```
+❌ "Dựa trên các phân tích đã được thực hiện, chúng ta có thể đưa ra kết luận..."
+
+✅ "Qua các phân tích, ta có thể đưa ra kết luận..."
+```
+
+### 10d. Câu nối tự nhiên
+
+**Vấn đề:** Các cụm nối quá cứng nhắc, "văn phong công nghiệp".
+
+**THAY:**
+
+| ❌ Cứng nhắc | ✅ Tự nhiên |
+|:-------------|:------------|
+| "Tiếp theo, chúng ta sẽ..." | "Giờ chúng ta sẽ..." |
+| "Bây giờ, chúng ta sẽ..." | "Bây giờ, ta sẽ..." |
+| "Trong phần tiếp theo..." | "Phần sau..." |
+| "Tuy nhiên, cần lưu ý rằng..." | "Nhưng cần nhớ..." |
+| "Do đó, chúng ta có thể..." | "Vậy ta có thể..." |
+| "Cần phải lưu ý rằng..." | "Lưu ý:..." |
+| "Một trong những..." | "Một..." |
+
+### 10e. Tự kiểm tra trước khi submit
+
+Thêm vào checklist:
+
+- [ ] **Số lượng `---`:** Không quá 3 trong toàn bài
+- [ ] **Độ dài câu:** Không câu nào quá 25 từ
+- [ ] **Cụm từ máy móc:** Kiểm tra bằng mắt, có cảm giác "giống AI" không?
+- [ ] **Giọng văn:** Đọc lên có tự nhiên không? Có "kì kì" không?
+
+**Cách kiểm tra nhanh:**
+1. Đọc to bài viết — nghe có "kì kì" không?
+2. Tưởng tượng người bạn nói chuyện — họ nói vậy không?
+3. Copy đoạn văn vào Google dịch → dịch sang tiếng Anh → đọc lại — có "machine translation" không?
+
